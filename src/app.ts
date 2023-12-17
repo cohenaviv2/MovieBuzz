@@ -1,5 +1,12 @@
-function a() {
-    console.log("hii");
-}
+import express from "express";
+import movieRouter from "./routers/movieRouter";
+import "dotenv/config";
 
-a();
+const app = express();
+const port = process.env.SERVER_PORT || 5000;
+
+app.use("/movies", movieRouter);
+
+app.listen(port, () => {
+  console.log(`\n\n* Server is running on http://localhost:${port} *\n\n`);
+});

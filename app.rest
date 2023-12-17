@@ -1,0 +1,2 @@
+GET http://localhost:5000/movies/now-playing?page=1
+
