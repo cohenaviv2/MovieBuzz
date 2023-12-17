@@ -48,3 +48,29 @@ export async function getNowPlayingMovies(page: number = 1): Promise<Movie[]> {
   const mappedMovies = response.data.results.map(mapToMovie);
   return mappedMovies;
 }
+
+export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
+  const url = `${BASE_URL}/movie/upcoming`;
+  const params = { api_key: API_KEY, page };
+  const response = await axios.get(url, { params });
+  const mappedMovies = response.data.results.map(mapToMovie);
+  return mappedMovies;
+}
+
+export async function searchMovies(query: string): Promise<Movie[]> {
+  const url = `${BASE_URL}/search/movie`;
+  const params = { api_key: API_KEY, query };
+  const response = await axios.get(url, {params});
+  const mappedMovies = response.data.results.map(mapToMovie);
+  return mappedMovies;
+}
+
+export async function getMoviesByGenre(genreId: number): Promise<Movie[]> {
+  const url = `${BASE_URL}/discover/movie`;
+  const params = { api_key: API_KEY, with_genres: genreId };
+  const response = await axios.get(url, {
+    params,
+  });
+  const mappedMovies = response.data.results.map(mapToMovie);
+  return mappedMovies;
+}

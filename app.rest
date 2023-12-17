@@ -1,2 +1,2 @@
-GET http://localhost:5000/movies/now-playing?page=1
+GET http://localhost:5000/tv/top_rated?page=1
 
