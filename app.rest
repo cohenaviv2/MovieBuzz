@@ -1,0 +1,2 @@
+GET http://localhost:5000/tv/top_rated?page=1
+
