@@ -1,6 +1,6 @@
 import { Document, Schema, model, Types } from 'mongoose';
 
-interface Post {
+export interface Post {
   creatorId: Types.ObjectId;
   movieName: string;
   text: string;
