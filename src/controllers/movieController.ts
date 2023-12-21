@@ -3,9 +3,10 @@ import "dotenv/config";
 
 const API_KEY = process.env.TMDB_API_KEY;
 const BASE_URL = process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
-const POSTER_URL = process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
+const POSTER_URL =
+  process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
 
-interface Movie {
+export interface IMovie {
   id: number;
   title: string;
   poster_path: string;
@@ -15,12 +16,11 @@ interface Movie {
   language: string;
 }
 
-function mapToMovie(tmdbMovie: any): Movie {
+function mapToMovie(tmdbMovie: any): IMovie {
   const { id, title, overview, release_date, genre_ids, original_language } =
     tmdbMovie;
 
-
-  const mappedMovie: Movie = {
+  const mappedMovie: IMovie = {
     id: tmdbMovie.id as number,
     title: tmdbMovie.title as string,
     poster_path: String(POSTER_URL + tmdbMovie.poster_path),
@@ -33,15 +33,23 @@ function mapToMovie(tmdbMovie: any): Movie {
   return mappedMovie;
 }
 
-export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
-  const url = `${BASE_URL}/movie/popular`;
-  const params = { api_key: API_KEY, page };
-  const response= await axios.get(url, {params,});
+export async function searchMovies(query: string, page: number = 1): Promise<IMovie[]> {
+  const url = `${BASE_URL}/search/movie`;
+  const params = { api_key: API_KEY, query, page };
+  const response = await axios.get(url, { params });
   const mappedMovies = response.data.results.map(mapToMovie);
   return mappedMovies;
 }
 
-export async function getNowPlayingMovies(page: number = 1): Promise<Movie[]> {
+export async function getPopularMovies(page: number = 1): Promise<IMovie[]> {
+  const url = `${BASE_URL}/movie/popular`;
+  const params = { api_key: API_KEY, page };
+  const response = await axios.get(url, { params });
+  const mappedMovies = response.data.results.map(mapToMovie);
+  return mappedMovies;
+}
+
+export async function getNowPlayingMovies(page: number = 1): Promise<IMovie[]> {
   const url = `${BASE_URL}/movie/now_playing`;
   const params = { api_key: API_KEY, page };
   const response = await axios.get(url, { params });
@@ -49,7 +57,7 @@ export async function getNowPlayingMovies(page: number = 1): Promise<Movie[]> {
   return mappedMovies;
 }
 
-export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
+export async function getUpcomingMovies(page: number = 1): Promise<IMovie[]> {
   const url = `${BASE_URL}/movie/upcoming`;
   const params = { api_key: API_KEY, page };
   const response = await axios.get(url, { params });
@@ -57,15 +65,7 @@ export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
   return mappedMovies;
 }
 
-export async function searchMovies(query: string): Promise<Movie[]> {
-  const url = `${BASE_URL}/search/movie`;
-  const params = { api_key: API_KEY, query };
-  const response = await axios.get(url, {params});
-  const mappedMovies = response.data.results.map(mapToMovie);
-  return mappedMovies;
-}
-
-export async function getMoviesByGenre(genreId: number): Promise<Movie[]> {
+export async function getMoviesByGenre(genreId: number): Promise<IMovie[]> {
   const url = `${BASE_URL}/discover/movie`;
   const params = { api_key: API_KEY, with_genres: genreId };
   const response = await axios.get(url, {

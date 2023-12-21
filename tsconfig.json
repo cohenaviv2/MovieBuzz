@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "types": ["dotenv/config"],
+        "types": ["dotenv/config","node","jest"],
         "module": "CommonJS",
         "esModuleInterop": true,
         "target": "ES6",
