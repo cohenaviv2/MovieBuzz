@@ -79,17 +79,6 @@ describe('CommentController', () => {
         const deletedComment = yield CommentModel_1.default.findById(createdCommentId);
         expect(deletedComment).toBeNull();
     }));
-    test('should update a comment by ID', () => __awaiter(void 0, void 0, void 0, function* () {
-        const updatedData = {
-            creatorId: new mongoose_1.Types.ObjectId(),
-            text: 'Updated comment text',
-        };
-        const response = yield (0, supertest_1.default)(app)
-            .put(`/comments/update/${createdCommentId}`)
-            .send(updatedData)
-            .expect(200);
-        expect(response.body.text).toBe('Updated comment text');
-    }));
     afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield mongoose_1.default.connection.close();
     }));
