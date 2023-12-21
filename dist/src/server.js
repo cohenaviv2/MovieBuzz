@@ -14,7 +14,7 @@ const UserRoutes_1 = __importDefault(require("./routes/UserRoutes"));
 const initServer = () => {
     const promise = new Promise((resolve) => {
         const db = mongoose_1.default.connection;
-        db.once("open", () => console.log("Connected to Database"));
+        db.once("open", () => console.log("Connected to MongoDB"));
         db.on("error", (error) => console.error(error));
         const url = process.env.DATABASE_URL;
         mongoose_1.default.connect(url).then(() => {
