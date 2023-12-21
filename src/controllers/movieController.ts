@@ -3,7 +3,8 @@ import "dotenv/config";
 
 const API_KEY = process.env.TMDB_API_KEY;
 const BASE_URL = process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
-const POSTER_URL = process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
+const POSTER_URL =
+  process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
 
 interface Movie {
   id: number;
@@ -19,7 +20,6 @@ function mapToMovie(tmdbMovie: any): Movie {
   const { id, title, overview, release_date, genre_ids, original_language } =
     tmdbMovie;
 
-
   const mappedMovie: Movie = {
     id: tmdbMovie.id as number,
     title: tmdbMovie.title as string,
@@ -33,10 +33,19 @@ function mapToMovie(tmdbMovie: any): Movie {
   return mappedMovie;
 }
 
+export async function searchMovies(query: string, page: number = 1): Promise<Movie[]> {
+  const url = `${BASE_URL}/search/movie`;
+  const params = { api_key: API_KEY, query, page };
+  const response = await axios.get(url, { params });
+  const mappedMovies = response.data.results.map(mapToMovie);
+  return mappedMovies;
+}
+
+
 export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
   const url = `${BASE_URL}/movie/popular`;
   const params = { api_key: API_KEY, page };
-  const response= await axios.get(url, {params,});
+  const response = await axios.get(url, { params });
   const mappedMovies = response.data.results.map(mapToMovie);
   return mappedMovies;
 }
@@ -53,14 +62,6 @@ export async function getUpcomingMovies(page: number = 1): Promise<Movie[]> {
   const url = `${BASE_URL}/movie/upcoming`;
   const params = { api_key: API_KEY, page };
   const response = await axios.get(url, { params });
-  const mappedMovies = response.data.results.map(mapToMovie);
-  return mappedMovies;
-}
-
-export async function searchMovies(query: string): Promise<Movie[]> {
-  const url = `${BASE_URL}/search/movie`;
-  const params = { api_key: API_KEY, query };
-  const response = await axios.get(url, {params});
   const mappedMovies = response.data.results.map(mapToMovie);
   return mappedMovies;
 }

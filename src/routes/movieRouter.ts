@@ -11,11 +11,12 @@ const router = express.Router();
 
 router.get("/search", async (req, res) => {
   const query = req.query.query as string | undefined;
+  const page = req.query.page ? parseInt(req.query.page as string) : 1;
   if (!query) {
     res.status(400).json({ error: "Query parameter is required" });
     return;
   }
-  const results = await searchMovies(query);
+  const results = await searchMovies(query,page);
   res.json(results);
 });
 
