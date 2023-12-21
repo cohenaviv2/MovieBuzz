@@ -5,7 +5,7 @@ import {
   getNowPlayingMovies,
   getUpcomingMovies,
   getMoviesByGenre,
-} from "../controllers/movieController";
+} from "../controllers/MovieController"
 
 const router = express.Router();
 

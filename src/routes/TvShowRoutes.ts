@@ -5,7 +5,7 @@ import {
   getTopRatedTvShows,
   getOnAirTvShows,
   getTvShowsByGenre,
-} from "../controllers/tvShowsController";
+} from "../controllers/TvShowsController";
 
 const router = express.Router();
 

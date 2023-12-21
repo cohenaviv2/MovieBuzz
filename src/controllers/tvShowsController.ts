@@ -6,7 +6,7 @@ const BASE_URL = process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
 const POSTER_URL =
   process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
 
-interface TvShow {
+export interface ITvShow {
   id: number;
   title: string;
   poster_path: string;
@@ -16,7 +16,7 @@ interface TvShow {
   language: string;
 }
 
-function mapToTvShow(tmdbTvShow: any): TvShow {
+function mapToTvShow(tmdbTvShow: any): ITvShow {
   const {
     id,
     original_name,
@@ -26,7 +26,7 @@ function mapToTvShow(tmdbTvShow: any): TvShow {
     original_language,
   } = tmdbTvShow;
 
-  const mappedTvShow: TvShow = {
+  const mappedTvShow: ITvShow = {
     id: tmdbTvShow.id as number,
     title: tmdbTvShow.original_name as string,
     poster_path: String(POSTER_URL + tmdbTvShow.poster_path),
@@ -39,7 +39,7 @@ function mapToTvShow(tmdbTvShow: any): TvShow {
   return mappedTvShow;
 }
 
-export async function searchTvShows(query: string, page: number =1): Promise<TvShow[]> {
+export async function searchTvShows(query: string, page: number =1): Promise<ITvShow[]> {
   const url = `${BASE_URL}/search/tv`;
   const params = { api_key: API_KEY, query,page };
   const response = await axios.get(url, { params });
@@ -47,7 +47,7 @@ export async function searchTvShows(query: string, page: number =1): Promise<TvS
   return mappedShows;
 }
 
-export async function getPopularTvShows(page: number = 1): Promise<TvShow[]> {
+export async function getPopularTvShows(page: number = 1): Promise<ITvShow[]> {
   const url = `${BASE_URL}/tv/popular`;
   const params = { api_key: API_KEY, page };
   const response = await axios.get(url, { params });
@@ -55,7 +55,7 @@ export async function getPopularTvShows(page: number = 1): Promise<TvShow[]> {
   return mappedShows;
 }
 
-export async function getTopRatedTvShows(page: number = 1): Promise<TvShow[]> {
+export async function getTopRatedTvShows(page: number = 1): Promise<ITvShow[]> {
   const url = `${BASE_URL}/tv/top_rated`;
   const params = { api_key: API_KEY, page };
   const response = await axios.get(url, { params });
@@ -63,7 +63,7 @@ export async function getTopRatedTvShows(page: number = 1): Promise<TvShow[]> {
   return mappedShows;
 }
 
-export async function getOnAirTvShows(page: number = 1): Promise<TvShow[]> {
+export async function getOnAirTvShows(page: number = 1): Promise<ITvShow[]> {
   const url = `${BASE_URL}/tv/on_the_air`;
   const params = { api_key: API_KEY, page };
   const response = await axios.get(url, { params });
@@ -71,7 +71,7 @@ export async function getOnAirTvShows(page: number = 1): Promise<TvShow[]> {
   return mappedShows;
 }
 
-export async function getTvShowsByGenre(genreId: number): Promise<TvShow[]> {
+export async function getTvShowsByGenre(genreId: number): Promise<ITvShow[]> {
   const url = `${BASE_URL}/discover/tv`;
   const params = { api_key: API_KEY, with_genres: genreId };
   const response = await axios.get(url, {
