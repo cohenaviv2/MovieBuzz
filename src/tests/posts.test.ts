@@ -13,11 +13,11 @@ beforeAll(async () => {
 
 const testData: IPost = {
   creatorId: new Types.ObjectId(),
-  tmdbMovieId: 123,
+  tmdbId: "123",
   text: "Test post",
   image: "test.jpg",
-  rate: 5,
-  commentsArray: [],
+  rating: 5,
+  comments: [],
 };
 
 describe("PostController", () => {
@@ -47,6 +47,20 @@ describe("PostController", () => {
       .expect(200);
 
     expect(response.body.text).toBe("Test post");
+  });
+
+  test("should update a post by ID", async () => {
+    const updatedData: Partial<IPost> = {
+      text: "Updated post",
+    };
+
+    await request(app)
+      .put(`/posts/update/${createdPostId}`)
+      .send(updatedData)
+      .expect(200);
+
+    const updatedPost = await PostModel.findById(createdPostId);
+    expect(updatedPost?.text).toBe("Updated post");
   });
 
   test("should delete a post by ID", async () => {
