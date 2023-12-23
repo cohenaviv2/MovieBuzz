@@ -2,12 +2,13 @@ import express, { Express } from "express";
 import "dotenv/config";
 import mongoose from "mongoose";
 import session from "express-session";
-import passport from "./auth/passport-config"
+import passport from "./auth/passport-config";
 import movieRouter from "./routes/MovieRoutes";
 import tvShowsRouter from "./routes/TvShowRoutes";
 import commentRoutes from "./routes/CommentRoutes";
 import postRoutes from "./routes/PostRoutes";
 import userRoutes from "./routes/UserRoutes";
+import "dotenv/config";
 
 const initServer = (): Promise<Express> => {
   const promise = new Promise<Express>((resolve) => {
@@ -21,7 +22,7 @@ const initServer = (): Promise<Express> => {
       // Set up session middleware
       app.use(
         session({
-          secret: "your-secret-key",
+          secret: process.env.GOOGLE_CLIENT_SECRET,
           resave: false,
           saveUninitialized: true,
         })
@@ -35,7 +36,7 @@ const initServer = (): Promise<Express> => {
 
       // Callback route after Google has authenticated the user
       app.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => {
-        res.redirect("/"); // Redirect to the home page or your desired destination
+        res.redirect("/tv/popular"); // Redirect to the home page or your desired destination
       });
       app.use("/comments", commentRoutes);
       app.use("/posts", postRoutes);
