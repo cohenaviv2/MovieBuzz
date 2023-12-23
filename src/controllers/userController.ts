@@ -1,5 +1,5 @@
-import UserModel, {IUser} from "../models/UserModel";
-import createController from "./BaseController";
+import UserModel, { IUser } from '../models/UserModel';
+import createController from './BaseController';
 
 const commentController = createController<IUser>(UserModel);
 

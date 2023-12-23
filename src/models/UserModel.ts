@@ -1,23 +1,48 @@
 import { Document, Schema, model, Types } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 export interface IUser {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  password?: string; // For regular sign-up
-  googleId?: string; // For Google sign-up
+  role: string;
+  password: string;
+  passwordConfirm: string;
   image: string;
-  posts?: Types.ObjectId[]; // Array of Post IDs created by the user
+  posts: Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser & Document>({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  image: { type: String, required: true },
-  password: { type: String }, // For regular sign-up
-  googleId: { type: String }, // For Google sign-up
-  posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+  firstName: { type: String, required: [true, 'Please provide your first name'] },
+  lastName: { type: String, required: [true, 'Please provide your last name'] },
+  email: { type: String, required: [true, 'Please provide your email'], unique: true },
+  image: { type: String, required: [true, 'Please provide your image'] },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
+  },
+  password: { type: String, required: [true, 'Please provide password'] },
+  passwordConfirm: {
+    type: String,
+    required: [true, 'Please confirm your password'],
+    validate: {
+      validator: function (val) {
+        return val === this.password;
+      },
+      message: 'Passwords are not equals',
+    },
+  },
+  posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 });
 
-const UserModel = model<IUser & Document>("User", userSchema);
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  this.passwordConfirm = undefined;
+  next();
+});
+
+const UserModel = model<IUser & Document>('User', userSchema);
 
 export default UserModel;
