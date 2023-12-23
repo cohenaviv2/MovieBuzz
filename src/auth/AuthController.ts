@@ -3,7 +3,7 @@ import User from "../models/UserModel";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const signToken = (id: string) => {
+export const signToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
@@ -12,10 +12,10 @@ const signToken = (id: string) => {
 const register = async (req: Request, res: Response) => {
   try {
     const itemData = req.body;
-    const rs2 = await User.create(itemData);
-    const token = signToken(rs2._id);
+    const newUser = await User.create(itemData);
+    const token = signToken(newUser._id);
     return res.status(200).send({
-      user: rs2,
+      user: newUser,
       accessToken: token,
     });
   } catch (err) {

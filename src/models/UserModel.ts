@@ -9,6 +9,7 @@ export interface IUser {
   password: string;
   passwordConfirm: string;
   image: string;
+  googleId?:string;
   posts: Types.ObjectId[];
 }
 
@@ -33,10 +34,12 @@ const userSchema = new Schema<IUser & Document>({
       message: 'Passwords are not equals',
     },
   },
+  googleId: {type:String},
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 });
 
 userSchema.pre('save', async function (next) {
+  // Use salt to save the password on db
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
