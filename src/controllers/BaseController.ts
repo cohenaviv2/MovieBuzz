@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { Model } from "mongoose";
+import { Request, Response } from 'express';
+import { Model } from 'mongoose';
 
 export class BaseController<ModelType> {
   model: Model<ModelType>;
@@ -13,7 +13,7 @@ export class BaseController<ModelType> {
       res.send(items);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 
@@ -27,7 +27,7 @@ export class BaseController<ModelType> {
       }
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 
@@ -38,7 +38,7 @@ export class BaseController<ModelType> {
       res.status(201).json(newItem);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: err.message });
     }
   }
 
@@ -49,12 +49,12 @@ export class BaseController<ModelType> {
         new: true,
       });
       if (!updatedItem) {
-        return res.status(404).json({ error: "Item not found" });
+        return res.status(404).json({ error: 'Item not found' });
       }
       res.status(200).json(updatedItem);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 
@@ -63,12 +63,12 @@ export class BaseController<ModelType> {
       const itemId = req.params.id;
       const deletedItem = await this.model.findByIdAndDelete(itemId);
       if (!deletedItem) {
-        return res.status(404).json({ error: "Comment not found" });
+        return res.status(404).json({ error: 'Comment not found' });
       }
       res.status(204).send();
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 }

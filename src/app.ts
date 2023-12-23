@@ -1,4 +1,4 @@
-import initServer from "./server";
+import initServer from './server';
 
 initServer().then((app) => {
   const PORT = process.env.SERVER_PORT || 5000;
@@ -17,4 +17,4 @@ initServer().then((app) => {
     http://localhost:5000/tv/by-genre/:genreId`);
   });
 });
-``
+``;
