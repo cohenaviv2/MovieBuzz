@@ -1,7 +1,8 @@
 import { Document, Schema, model, Types } from 'mongoose';
 
 export interface IUser {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password?: string; // For regular sign-up
   googleId?: string; // For Google sign-up
@@ -10,7 +11,8 @@ export interface IUser {
 }
 
 const userSchema = new Schema<IUser & Document>({
-  name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   image: { type: String, required: true },
   password: { type: String }, // For regular sign-up

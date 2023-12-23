@@ -35,14 +35,9 @@ function mapToMovie(tmdbMovie: any): IMovie {
 export async function getMovieById(movieId: number): Promise<IMovie> {
   const url = `${BASE_URL}/movie/${movieId}`;
   const params = { api_key: API_KEY };
-  try {
-    const response = await axios.get(url, { params });
-    const movie = mapToMovie(response.data);
-    return movie;
-  } catch (error) {
-    console.error(`Error fetching movie by ID ${movieId}:`, error.message);
-    return null;
-  }
+  const response = await axios.get(url, { params });
+  const movie = mapToMovie(response.data);
+  return movie;
 }
 
 export async function searchMovies(query: string, page: number = 1): Promise<IMovie[]> {

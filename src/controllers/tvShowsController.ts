@@ -39,18 +39,12 @@ function mapToTvShow(tmdbTvShow: any): ITvShow {
   return mappedTvShow;
 }
 
-export async function getTvShowById(tvShowId: number): Promise<ITvShow | null> {
+export async function getTvShowById(tvShowId: number): Promise<ITvShow> {
   const url = `${BASE_URL}/tv/${tvShowId}`;
   const params = { api_key: API_KEY };
-
-  try {
-    const response = await axios.get(url, { params });
-    const tvShow = mapToTvShow(response.data);
-    return tvShow;
-  } catch (error) {
-    console.error(`Error fetching TV show by ID ${tvShowId}:`, error.message);
-    return null;
-  }
+  const response = await axios.get(url, { params });
+  const tvShow = mapToTvShow(response.data);
+  return tvShow;
 }
 
 export async function searchTvShows(query: string, page: number =1): Promise<ITvShow[]> {
