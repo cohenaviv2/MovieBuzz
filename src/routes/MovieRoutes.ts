@@ -1,61 +1,63 @@
 import express from "express";
 import {
-  searchTvShows,
-  getPopularShows,
-  getTopRatedShows,
-  getOnTheAirShows,
-  getShowsByGenre,
-} from "../controllers/tvShowsController";
+  searchMovies,
+  getPopularMovies,
+  getNowPlayingMovies,
+  getUpcomingMovies,
+  getMoviesByGenre,
+} from "../controllers/MovieController"
 
 const router = express.Router();
 
 router.get("/search", async (req, res) => {
   const query = req.query.query as string | undefined;
+  const page = req.query.page ? parseInt(req.query.page as string) : 1;
   if (!query) {
     res.status(400).json({ error: "Query parameter is required" });
     return;
   }
-  const results = await searchTvShows(query);
+  const results = await searchMovies(query,page);
   res.json(results);
 });
 
 router.get("/popular", async (req, res) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
-    const popularShows = await getPopularShows(page);
-    res.json(popularShows);
+    const popularMovies = await getPopularMovies(page);
+    res.json(popularMovies);
   } catch (error) {
-    console.error("Error fetching popular Shows:", error.message);
+    console.error("Error fetching popular movies:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-router.get("/top_rated", async (req, res) => {
+router.get("/now_playing", async (req, res) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
-    const topRatedShows = await getTopRatedShows(page);
-    res.json(topRatedShows);
+    const nowPlayingMovies = await getNowPlayingMovies(page);
+    res.json(nowPlayingMovies);
   } catch (error) {
-    console.error("Error fetching popular Shows:", error.message);
+    console.error("Error fetching popular movies:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-router.get("/on_the_air", async (req, res) => {
+router.get("/upcoming", async (req, res) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
-    const onAirShows = await getOnTheAirShows(page);
-    res.json(onAirShows);
+    const upcomingMovies = await getUpcomingMovies(page);
+    res.json(upcomingMovies);
   } catch (error) {
-    console.error("Error fetching popular Shows:", error.message);
+    console.error("Error fetching popular movies:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
 router.get("/by-genre/:genreId", async (req, res) => {
   const genreId = Number(req.params.genreId);
-  const Shows = await getShowsByGenre(genreId);
-  res.json(Shows);
+  const movies = await getMoviesByGenre(genreId);
+  res.json(movies);
 });
+
 
 export default router;
