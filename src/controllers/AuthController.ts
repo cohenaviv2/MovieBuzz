@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import User from '../models/UserModel';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { Request, Response, NextFunction } from "express";
+import User from "../models/UserModel";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-const signToken = (id) => {
+const signToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
@@ -14,10 +14,13 @@ const register = async (req: Request, res: Response) => {
     const itemData = req.body;
     const rs2 = await User.create(itemData);
     const token = signToken(rs2._id);
-    return res.status(200).send({ user: rs2, accessToken: token });
+    return res.status(200).send({
+      user: rs2,
+      accessToken: token,
+    });
   } catch (err) {
     return res.status(400).json({
-      status: 'fail',
+      status: "fail",
       message: err.message,
     });
   }
@@ -28,49 +31,57 @@ const login = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
     if (!email || !password) {
-      return res.status(400).send('Please provide email and password');
+      return res.status(400).send("Please provide email and password");
     }
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({
+      email: email,
+    });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send('Incorrect email or password');
+      return res.status(401).send("Incorrect email or password");
     }
     const token = signToken(user._id);
-    return res.status(200).send({ accessToken: token });
+    return res.status(200).send({
+      accessToken: token,
+    });
   } catch (err) {
     return res.status(400).json({
-      status: 'fail',
+      status: "fail",
       message: err.message,
     });
   }
 };
 
 const logout = async (req: Request, res: Response) => {
-  res.status(400).send('unimplemented');
+  res.status(400).send("unimplemented");
 };
 
 export interface AuthRequest extends Request {
-  user: { _id: string };
+  user: {
+    id: string;
+  };
 }
 
 const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
-  let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    token = req.headers.authorization.split(' ')[1];
+  let token: string;
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    token = req.headers.authorization.split(" ")[1];
   }
   if (!token) {
-    return res.status(401).send('You are not logged in! Please log in to get access');
+    return res.status(401).send("You are not logged in! Please log in to get access");
   }
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(401);
-    req.user = user.id;
+    req.user = user as {
+      id: string;
+    };
     next();
   });
 };
 
 const restrict = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const user = await User.findById(req.user);
-  if (user.role != 'admin') {
-    return res.status(403).send('You do not have pemission to this action');
+  const user = await User.findById(req.user.id);
+  if (user.role != "admin") {
+    return res.status(403).send("You do not have pemission to this action");
   }
   next();
 };

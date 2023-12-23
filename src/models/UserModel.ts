@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser & Document>({
     type: String,
     required: [true, 'Please confirm your password'],
     validate: {
-      validator: function (val) {
+      validator: function (val: string) {
         return val === this.password;
       },
       message: 'Passwords are not equals',
