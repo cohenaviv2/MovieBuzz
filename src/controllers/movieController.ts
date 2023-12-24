@@ -2,9 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import "dotenv/config";
 
 const API_KEY = process.env.TMDB_API_KEY;
-const BASE_URL = process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
-const POSTER_URL =
-  process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
+const BASE_URL = process.env.TMDB_BASE_URL;
+const POSTER_URL = process.env.TMDB_POSTER_URL;
 
 export interface IMovie {
   id: number;
@@ -16,9 +15,15 @@ export interface IMovie {
   language: string;
 }
 
+export class ApiController<Service> {
+  apiService:string;
+  constructor(service: Service) {
+  }
+
+}
+
 function mapToMovie(tmdbMovie: any): IMovie {
-  const { id, title, overview, release_date, genre_ids, original_language } =
-    tmdbMovie;
+  const { id, title, overview, release_date, genre_ids, original_language } = tmdbMovie;
 
   const mappedMovie: IMovie = {
     id: tmdbMovie.id as number,
@@ -31,6 +36,14 @@ function mapToMovie(tmdbMovie: any): IMovie {
   };
 
   return mappedMovie;
+}
+
+export async function getMovieById(movieId: number): Promise<IMovie> {
+  const url = `${BASE_URL}/movie/${movieId}`;
+  const params = { api_key: API_KEY };
+  const response = await axios.get(url, { params });
+  const movie = mapToMovie(response.data);
+  return movie;
 }
 
 export async function searchMovies(query: string, page: number = 1): Promise<IMovie[]> {
