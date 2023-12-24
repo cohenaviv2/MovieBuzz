@@ -33,7 +33,7 @@ router.get("/search", async (req: Request, res: Response) => {
 
 router.get("/popular", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
+    const page = parseInt(req.query.page as string, 10) || 1;
     const popularMovies = await getPopularMovies(page);
     res.json(popularMovies);
   } catch (error) {
@@ -44,7 +44,7 @@ router.get("/popular", async (req: Request, res: Response) => {
 
 router.get("/now_playing", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
+    const page = parseInt(req.query.page as string, 10) || 1;
     const nowPlayingMovies = await getNowPlayingMovies(page);
     res.json(nowPlayingMovies);
   } catch (error) {
@@ -55,7 +55,7 @@ router.get("/now_playing", async (req: Request, res: Response) => {
 
 router.get("/upcoming", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
+    const page = parseInt(req.query.page as string, 10) || 1;
     const upcomingMovies = await getUpcomingMovies(page);
     res.json(upcomingMovies);
   } catch (error) {

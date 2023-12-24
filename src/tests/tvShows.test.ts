@@ -2,7 +2,7 @@ import request from "supertest";
 import mongoose from "mongoose";
 import { Express } from "express";
 import initServer from "../server";
-import TvShowsRouter from "../routes/TvShowRoutes"
+import TvShowsRouter from "../routes/TvShowRoute";
 
 let app: Express;
 
@@ -25,9 +25,7 @@ describe("TV Shows Routes", () => {
   });
 
   test("GET /tv-shows/search should return search results", async () => {
-    const response = await request(app)
-      .get("/tv-shows/search")
-      .query({ query: "Breaking Bad" });
+    const response = await request(app).get("/tv-shows/search").query({ query: "Breaking Bad" });
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
@@ -57,10 +55,10 @@ describe("TV Shows Routes", () => {
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  // Optionally, you can add tests for error scenarios
+  // Tests for error scenarios
   test("GET /tv-shows/by-id/:invalidId should return 404 for an invalid TV show ID", async () => {
     const response = await request(app).get("/tv-shows/by-id/invalidId");
-    console.log(response.body); // Log the response body for further investigation
+    // console.log(response.body); // Log the response body for further investigation
     expect(response.status).toBe(404);
   });
 });

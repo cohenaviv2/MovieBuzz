@@ -2,29 +2,24 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import UserModel, { IUser } from "../models/UserModel";
 import "dotenv/config";
-import { signToken } from "./AuthController";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/google/callback", // Adjust the URL based on your deployment
+      callbackURL: GOOGLE_CALLBACK_URL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if the user already exists in your database
+        // Check if the user already exists in the DB
         let user = await UserModel.findOne({ googleId: profile.id });
-
         if (user) {
-          // User already exists, generate an access token
-          const token = signToken(user._id);
-          return done(null, { user, accessToken: token });
-        } else {
-          console.log("** NEW USER **");
+          return done(null, user);
         }
 
         // If the user doesn't exist, create a new user
@@ -42,11 +37,7 @@ passport.use(
 
         user = await UserModel.create(userData);
 
-        // Generate an access token for the new user
-        const token = signToken(user._id);
-        
-
-        done(null, { user, accessToken: token });
+        done(null, user._id);
       } catch (error) {
         done(error, null);
       }
@@ -54,8 +45,8 @@ passport.use(
   )
 );
 
-passport.serializeUser((params: { user: IUser; accessToken: string }, done) => {
-  done(null, params.user);
+passport.serializeUser((id: string, done) => {
+  done(null, id);
 });
 
 passport.deserializeUser(async (id: string, done) => {

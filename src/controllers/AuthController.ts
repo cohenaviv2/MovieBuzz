@@ -3,21 +3,24 @@ import User from "../models/UserModel";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export const signToken = (id: string) => {
+export function signToken(id: string): string {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
-};
-
+}
 const register = async (req: Request, res: Response) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  if (!email || !password) {
+    return res.status(400).send("missing email or password");
+  }
   try {
-    const itemData = req.body;
-    const newUser = await User.create(itemData);
-    const token = signToken(newUser._id);
-    return res.status(200).send({
-      user: newUser,
-      accessToken: token,
-    });
+    const findUser = await User.findOne({ email: email });
+    if (findUser != null) {
+      return res.status(406).send("email already exists");
+    }
+    const user = await User.create(req.body);
+    return res.status(201).send({ _id: user._id });
   } catch (err) {
     return res.status(400).json({
       status: "fail",
@@ -33,21 +36,20 @@ const login = async (req: Request, res: Response) => {
     if (!email || !password) {
       return res.status(400).send("Please provide email and password");
     }
-    const user = await User.findOne({
-      email: email,
-    });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+
+    const user = await User.findOne({ email: email });
+    if (user == null) {
       return res.status(401).send("Incorrect email or password");
     }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).send("Incorrect email or password");
+    }
+
     const token = signToken(user._id);
-    return res.status(200).send({
-      accessToken: token,
-    });
+    return res.status(200).send({ accessToken: token });
   } catch (err) {
-    return res.status(400).json({
-      status: "fail",
-      message: err.message,
-    });
+    return res.status(400).json({ status: "fail", message: err.message });
   }
 };
 
@@ -56,30 +58,11 @@ const logout = async (req: Request, res: Response) => {
 };
 
 export interface AuthRequest extends Request {
-  user: {
-    id: string;
-  };
+  user: { _id: string };
 }
 
-const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
-  let token: string;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
-    return res.status(401).send("You are not logged in! Please log in to get access");
-  }
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(401);
-    req.user = user as {
-      id: string;
-    };
-    next();
-  });
-};
-
 const restrict = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user._id);
   if (user.role != "admin") {
     return res.status(403).send("You do not have pemission to this action");
   }
@@ -90,6 +73,5 @@ export default {
   register,
   login,
   logout,
-  protect,
-  restrict,
+  restrict
 };

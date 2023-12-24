@@ -15,9 +15,15 @@ export interface IMovie {
   language: string;
 }
 
+export class ApiController<Service> {
+  apiService:string;
+  constructor(service: Service) {
+  }
+
+}
+
 function mapToMovie(tmdbMovie: any): IMovie {
-  const { id, title, overview, release_date, genre_ids, original_language } =
-    tmdbMovie;
+  const { id, title, overview, release_date, genre_ids, original_language } = tmdbMovie;
 
   const mappedMovie: IMovie = {
     id: tmdbMovie.id as number,

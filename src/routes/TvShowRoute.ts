@@ -33,7 +33,7 @@ router.get("/search", async (req: Request, res: Response) => {
 
 router.get("/popular", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
+    const page = parseInt(req.query.page as string, 10) || 1;
     const popularShows = await getPopularTvShows(page);
     res.json(popularShows);
   } catch (error) {
@@ -44,7 +44,7 @@ router.get("/popular", async (req: Request, res: Response) => {
 
 router.get("/top_rated", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
+    const page = parseInt(req.query.page as string, 10) || 1;
     const topRatedShows = await getTopRatedTvShows(page);
     res.json(topRatedShows);
   } catch (error) {
@@ -55,7 +55,7 @@ router.get("/top_rated", async (req: Request, res: Response) => {
 
 router.get("/on_the_air", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1; // Parse page parameter from query string
+    const page = parseInt(req.query.page as string, 10) || 1;
     const onAirShows = await getOnAirTvShows(page);
     res.json(onAirShows);
   } catch (error) {
