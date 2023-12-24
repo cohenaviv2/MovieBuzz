@@ -11,6 +11,7 @@ export interface IUser {
   image: string;
   googleId?:string;
   posts: Types.ObjectId[];
+  tokens: string[];
 }
 
 const userSchema = new Schema<IUser & Document>({
@@ -26,7 +27,6 @@ const userSchema = new Schema<IUser & Document>({
   password: { type: String, required: [true, 'Please provide password'] },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confirm your password'],
     validate: {
       validator: function (val: string) {
         return val === this.password;
@@ -36,6 +36,9 @@ const userSchema = new Schema<IUser & Document>({
   },
   googleId: {type:String},
   posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
+  tokens : {
+    type: [String]
+  }
 });
 
 userSchema.pre('save', async function (next) {

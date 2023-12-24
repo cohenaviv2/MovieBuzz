@@ -14,6 +14,7 @@ router.use(passport.session());
 router.post("/login", AuthController.login);
 router.post("/register", AuthController.register);
 router.post("/logout", AuthController.logout);
+router.post("/refreshToken", AuthController.refreshToken);
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => res.redirect("/tv/popular"));
 

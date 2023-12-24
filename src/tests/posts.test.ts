@@ -4,7 +4,6 @@ import mongoose, { Types } from "mongoose";
 import initServer from "../server";
 import PostModel, { IPost } from "../models/PostModel";
 import UserModel from "../models/UserModel";
-import { testUser } from "./auth.test";
 
 let app: Express;
 let accessToken: string;
@@ -18,9 +17,20 @@ const testPost: IPost = {
   comments: [],
 };
 
+const testUser = {
+  firstName: "Test",
+  lastName: "test",
+  email: "testUser@test.com",
+  role: "user",
+  password: "1234567890",
+  passwordConfirm: "1234567890",
+  image: "img.jpg",
+  comments: [],
+};
+
 beforeAll(async () => {
   app = await initServer();
-  // login
+  // register
   await UserModel.deleteMany({ email: testUser.email });
   await request(app).post("/auth/register").send(testUser);
   const response = await request(app).post("/auth/login").send(testUser);
@@ -28,14 +38,14 @@ beforeAll(async () => {
 });
 
 
-describe("PostController", () => {
+describe("Post tests", () => {
   let createdPostId: string;
 
   test("should create a new post", async () => {
     const response = await request(app)
       .post("/posts")
-      .set("Authorization", "JWT " + accessToken)
       .send(testPost)
+      .set("Authorization", "JWT " + accessToken)
       .expect(201);
 
     expect(response.body.text).toBe("Test post");

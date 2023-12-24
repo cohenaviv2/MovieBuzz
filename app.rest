@@ -1,5 +1,36 @@
-GET http://localhost:5000/tv/top_rated?page=1
+### REGISTER
 
-###
+POST http://localhost:5000/auth/register
+content-type: application/json
 
+{
+  "firstName": "Test",
+  "lastName": "test",
+  "email": "testUser@test.com",
+  "role": "user",
+  "password": "1234567890",
+  "passwordConfirm": "1234567890",
+  "image": "img.jpg",
+  "comments": []
+}
 
+### LOGIN
+
+POST http://localhost:5000/auth/login
+content-type: application/json
+
+{
+  "email": "testUser@test.com",
+  "password": "1234567890"
+}
+
+### REFRESH TOKEN
+
+POST http://localhost:5000/auth/refreshToken
+Content-Type: application/json
+
+### GET COMMENTS
+
+GET http://localhost:5000/comments
+Content-Type: application/json
+Authorization: JWT 

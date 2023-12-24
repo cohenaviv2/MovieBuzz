@@ -6,7 +6,7 @@ import User from "../models//UserModel";
 
 let app: Express;
 
-export const testUser = {
+const testUser = {
   firstName: "Test",
   lastName: "test",
   email: "testUser@test.com",
@@ -27,6 +27,7 @@ afterAll(async () => {
 });
 
 let accessToken: string;
+let refreshToken: string;
 
 describe("Auth tests", () => {
   test("Test Register", async () => {
@@ -46,29 +47,53 @@ describe("Auth tests", () => {
     expect(response.statusCode).toBe(400);
   });
 
-    test("Test Login", async () => {
-      const response = await request(app).post("/auth/login").send(testUser);
-      expect(response.statusCode).toBe(200);
-      accessToken = response.body.accessToken;
-      expect(accessToken).toBeDefined();
-    });
+  test("Test Login", async () => {
+    const response = await request(app).post("/auth/login").send(testUser);
+    expect(response.statusCode).toBe(200);
+    accessToken = response.body.accessToken;
+    refreshToken = response.body.refreshToken;
+    expect(accessToken).toBeDefined();
+    expect(refreshToken).toBeDefined();
+  });
 
-    test("Test forbidden access without token", async () => {
-      const response = await request(app).get("/comments");
-      expect(response.statusCode).toBe(401);
-    });
+  test("Test forbidden access without token", async () => {
+    const response = await request(app).get("/comments");
+    expect(response.statusCode).toBe(401);
+  });
 
-    test("Test access with valid token", async () => {
-      const response = await request(app)
-        .get("/comments")
-        .set("Authorization", "JWT " + accessToken);
-      expect(response.statusCode).toBe(200);
-    });
+  test("Test access with valid token", async () => {
+    const response = await request(app)
+      .get("/comments")
+      .set("Authorization", "JWT " + accessToken);
+    expect(response.statusCode).toBe(200);
+  });
 
-    test("Test access with invalid token", async () => {
-      const response = await request(app)
-        .get("/comments")
-        .set("Authorization", "JWT 1" + accessToken);
-      expect(response.statusCode).toBe(401);
-    });
+  test("Test access with invalid token", async () => {
+    const response = await request(app)
+      .get("/comments")
+      .set("Authorization", "JWT 1" + accessToken);
+    expect(response.statusCode).toBe(401);
+  });
+
+  jest.setTimeout(30000);
+  test("Timeout access", async () => {
+    await new Promise((r) => setTimeout(r, 3 * 1000));
+    const response = await request(app)
+      .get("/comments")
+      .set("Authorization", "JWT " + accessToken);
+    console.log(response.body);
+    expect(response.statusCode).not.toEqual(200);
+  });
+
+  test("Refresh token", async () => {
+    const response = await request(app)
+      .post("/auth/refreshToken")
+      .set("Authorization", "JWT " + accessToken);
+    console.log(response.body);
+    expect(response.statusCode).toBe(200);
+    let newAccessToken = response.body.accessToken;
+    let newRefreshToken = response.body.refreshToken;
+    expect(newAccessToken).toBeDefined();
+    expect(newRefreshToken).toBeDefined();
+  });
 });

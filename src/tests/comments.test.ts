@@ -1,14 +1,23 @@
+import request from "supertest";
 import { Express } from "express";
 import mongoose, { Types } from "mongoose";
-import request from "supertest";
 import initServer from "../server";
-import CommentModel, { IComment } from "../models/CommentModel";
-import createController from "../controllers/BaseController";
 import UserModel from "../models/UserModel";
-import { testUser } from "./auth.test";
+import CommentModel, { IComment } from "../models/CommentModel";
 
 let app: Express;
-let accessToken:string;
+let accessToken: string;
+
+const testUser = {
+  firstName: "Test",
+  lastName: "test",
+  email: "testUser@test.com",
+  role: "user",
+  password: "1234567890",
+  passwordConfirm: "1234567890",
+  image: "img.jpg",
+  comments: [],
+};
 
 beforeAll(async () => {
   app = await initServer();
@@ -24,8 +33,7 @@ const testData: IComment = {
   text: "Test comment",
 };
 
-describe("CommentController", () => {
-  const commentController = createController<IComment>(CommentModel);
+describe("Comment tests", () => {
   let createdCommentId: string;
 
   test("should create a new comment", async () => {
@@ -51,6 +59,7 @@ describe("CommentController", () => {
   test("should get a comment by ID", async () => {
     const response = await request(app)
       .get(`/comments/${createdCommentId}`)
+      .set("Authorization", "JWT " + accessToken)
       .expect(200);
 
     expect(response.body.text).toBe("Test comment");
