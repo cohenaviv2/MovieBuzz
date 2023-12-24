@@ -33,6 +33,7 @@ passport.use(
           passwordConfirm: "default",
           googleId: profile.id,
           posts: [],
+          tokens: [],
         };
 
         user = await UserModel.create(userData);

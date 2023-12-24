@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import User from "../models/UserModel";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import UserModel from "../models/UserModel";
 
-export function signToken(id: string): string {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-}
-const register = async (req: Request, res: Response) => {
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+
+async function register(req: Request, res: Response) {
   const email = req.body.email;
   const password = req.body.password;
   if (!email || !password) {
@@ -22,14 +22,11 @@ const register = async (req: Request, res: Response) => {
     const user = await User.create(req.body);
     return res.status(201).send({ _id: user._id });
   } catch (err) {
-    return res.status(400).json({
-      status: "fail",
-      message: err.message,
-    });
+    return res.status(400).send({ status: "fail", message: err.message });
   }
-};
+}
 
-const login = async (req: Request, res: Response) => {
+async function login(req: Request, res: Response) {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -45,33 +42,91 @@ const login = async (req: Request, res: Response) => {
     if (!match) {
       return res.status(401).send("Incorrect email or password");
     }
+    const id = { _id: user._id };
+    const accessToken = jwt.sign(id, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const refreshToken = jwt.sign(id, JWT_REFRESH_SECRET);
 
-    const token = signToken(user._id);
-    return res.status(200).send({ accessToken: token });
+    if (user.tokens == null) user.tokens = [refreshToken];
+    else user.tokens.push(refreshToken);
+    await user.save();
+    return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken });
   } catch (err) {
-    return res.status(400).json({ status: "fail", message: err.message });
+    return res.status(400).send({ status: "fail", message: err.message });
   }
-};
+}
 
-const logout = async (req: Request, res: Response) => {
-  res.status(400).send("unimplemented");
-};
+async function logout(req: Request, res: Response) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, JWT_REFRESH_SECRET, async (err, user) => {
+    if (err) return res.status(403).send(err.message);
+    const id = user as { _id: string };
+    try {
+      const user = await UserModel.findOne(id);
+      if (user == null) res.status(403).send("Invalid request");
+      if (!user.tokens.includes(token)) {
+        user.tokens = []; // invalidate all user tokens
+        await user.save();
+        return res.status(403).send("Invalid request");
+      }
+
+      user.tokens.splice(user.tokens.indexOf(token), 1);
+      await user.save();
+      return res.status(200).send();
+    } catch (error) {
+      res.status(403).send(error.message);
+    }
+  });
+}
 
 export interface AuthRequest extends Request {
   user: { _id: string };
 }
 
-const restrict = async (req: AuthRequest, res: Response, next: NextFunction) => {
+async function refreshToken(req: Request, res: Response) {
+  const authHeader = req.headers["authorization"];
+  console.log(authHeader);
+  const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
+  if (token == null) return res.status(401).send("token==null");
+
+  jwt.verify(token, JWT_REFRESH_SECRET, async (err, user) => {
+    if (err) return res.status(403).send(err.message);
+    const id = user as { _id: string };
+    try {
+      const user = await UserModel.findOne(id);
+      if (user == null) res.status(403).send("Invalid request");
+      if (!user.tokens.includes(token)) {
+        user.tokens = []; // invalidate all user tokens
+        await user.save();
+        return res.status(403).send("Invalid request");
+      }
+
+      const accessToken = jwt.sign(user._id, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const refreshToken = jwt.sign(user._id, JWT_REFRESH_SECRET);
+
+      user.tokens[user.tokens.indexOf(token)] = refreshToken;
+      await user.save();
+      return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken });
+    } catch (error) {
+      res.status(403).send(error.message);
+    }
+  });
+}
+
+async function restrict(req: AuthRequest, res: Response, next: NextFunction) {
   const user = await User.findById(req.user._id);
   if (user.role != "admin") {
     return res.status(403).send("You do not have pemission to this action");
   }
   next();
-};
+}
 
 export default {
   register,
   login,
   logout,
-  restrict
+  restrict,
+  refreshToken,
 };
