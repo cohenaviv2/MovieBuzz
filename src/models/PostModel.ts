@@ -1,7 +1,7 @@
 import { Document, Schema, model, Types } from 'mongoose';
 
 export interface IPost {
-  creatorId: Types.ObjectId;
+  ownerId: string;
   text: string;
   image: string;
   rating: number;
@@ -10,7 +10,7 @@ export interface IPost {
 }
 
 const postSchema = new Schema<IPost & Document>({
-  creatorId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  ownerId: { type: String, ref: "User", required: true },
   text: { type: String, required: true },
   image: { type: String, required: true },
   rating: { type: Number, required: true },

@@ -1,6 +1,17 @@
 import PostModel, {IPost} from "../models/PostModel";
-import createController from "./BaseController";
+import { BaseController } from "./BaseController";
+import { AuthRequest } from "./AuthController";
+import { Response } from "express";
 
-const commentController = createController<IPost>(PostModel);
+class PostController extends BaseController<IPost> {
+    constructor() {
+        super(PostModel);
+    }
 
-export default commentController;
+    async post(req :AuthRequest, res : Response) {
+        const id = req.user._id;
+       
+    }
+}
+
+export default new PostController;

@@ -12,6 +12,7 @@ export interface IUser {
   googleId?:string;
   posts: Types.ObjectId[];
   tokens: string[];
+  _id?:string;
 }
 
 const userSchema = new Schema<IUser & Document>({

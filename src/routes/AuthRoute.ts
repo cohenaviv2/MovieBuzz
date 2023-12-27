@@ -1,8 +1,9 @@
+import "dotenv/config";
 import express from "express";
 import session from "express-session";
-import "dotenv/config";
 import passport from "../auth/passport-config";
 import AuthController from "../controllers/AuthController";
+import authMiddleware from "../auth/authMiddleware";
 
 const router = express.Router();
 
@@ -13,9 +14,9 @@ router.use(passport.session());
 
 router.post("/login", AuthController.login);
 router.post("/register", AuthController.register);
-router.post("/logout", AuthController.logout);
-router.post("/refreshToken", AuthController.refreshToken);
+router.post("/logout",authMiddleware, AuthController.logout);
+router.get("/refresh", AuthController.refreshToken);
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => res.redirect("/tv/popular"));
+router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => res.redirect("/movies/popular"));
 
 export default router;

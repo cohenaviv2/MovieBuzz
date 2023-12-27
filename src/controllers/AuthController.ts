@@ -42,9 +42,9 @@ async function login(req: Request, res: Response) {
     if (!match) {
       return res.status(401).send("Incorrect email or password");
     }
-    const id = { _id: user._id };
-    const accessToken = jwt.sign(id, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
-    const refreshToken = jwt.sign(id, JWT_REFRESH_SECRET);
+    const userInfo = { _id: user._id };
+    const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
 
     if (user.tokens == null) user.tokens = [refreshToken];
     else user.tokens.push(refreshToken);
@@ -60,11 +60,11 @@ async function logout(req: Request, res: Response) {
   const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
   if (token == null) return res.sendStatus(401);
 
-  jwt.verify(token, JWT_REFRESH_SECRET, async (err, user) => {
+  jwt.verify(token, JWT_REFRESH_SECRET, async (err, payload) => {
     if (err) return res.status(403).send(err.message);
-    const id = user as { _id: string };
+    const userInfo = payload as { _id: string };
     try {
-      const user = await UserModel.findOne(id);
+      const user = await UserModel.findById(userInfo._id);
       if (user == null) res.status(403).send("Invalid request");
       if (!user.tokens.includes(token)) {
         user.tokens = []; // invalidate all user tokens
@@ -87,15 +87,14 @@ export interface AuthRequest extends Request {
 
 async function refreshToken(req: Request, res: Response) {
   const authHeader = req.headers["authorization"];
-  console.log(authHeader);
   const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
-  if (token == null) return res.status(401).send("token==null");
+  if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, JWT_REFRESH_SECRET, async (err, user) => {
     if (err) return res.status(403).send(err.message);
-    const id = user as { _id: string };
+    const userInfo = user as { _id: string };
     try {
-      const user = await UserModel.findOne(id);
+      const user = await UserModel.findById(userInfo._id);
       if (user == null) res.status(403).send("Invalid request");
       if (!user.tokens.includes(token)) {
         user.tokens = []; // invalidate all user tokens
@@ -103,13 +102,14 @@ async function refreshToken(req: Request, res: Response) {
         return res.status(403).send("Invalid request");
       }
 
-      const accessToken = jwt.sign(user._id, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
-      const refreshToken = jwt.sign(user._id, JWT_REFRESH_SECRET);
+      const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
 
       user.tokens[user.tokens.indexOf(token)] = refreshToken;
       await user.save();
       return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken });
     } catch (error) {
+      console.log(error.message);
       res.status(403).send(error.message);
     }
   });

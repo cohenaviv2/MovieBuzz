@@ -75,25 +75,28 @@ describe("Auth tests", () => {
     expect(response.statusCode).toBe(401);
   });
 
-  jest.setTimeout(30000);
   test("Timeout access", async () => {
-    await new Promise((r) => setTimeout(r, 3 * 1000));
+    jest.setTimeout(10000);
+    await new Promise((r) => setTimeout(() => r("done"), 3 * 1000));
     const response = await request(app)
       .get("/comments")
       .set("Authorization", "JWT " + accessToken);
-    console.log(response.body);
     expect(response.statusCode).not.toEqual(200);
   });
 
   test("Refresh token", async () => {
     const response = await request(app)
-      .post("/auth/refreshToken")
-      .set("Authorization", "JWT " + accessToken);
-    console.log(response.body);
+      .get("/auth/refresh")
+      .set("Authorization", "JWT " + refreshToken);
     expect(response.statusCode).toBe(200);
     let newAccessToken = response.body.accessToken;
     let newRefreshToken = response.body.refreshToken;
     expect(newAccessToken).toBeDefined();
     expect(newRefreshToken).toBeDefined();
+
+    // const response2 = await request(app)
+    //   .get("/comments")
+    //   .set("Authorization", "JWT " + newAccessToken);
+    // expect(response2.statusCode).toBe(200);
   });
 });

@@ -3,21 +3,21 @@ import { Express } from "express";
 import mongoose, { Types } from "mongoose";
 import initServer from "../server";
 import PostModel, { IPost } from "../models/PostModel";
-import UserModel from "../models/UserModel";
+import UserModel, { IUser } from "../models/UserModel";
 
 let app: Express;
 let accessToken: string;
 
 const testPost: IPost = {
-  creatorId: new Types.ObjectId(),
+  ownerId: "GOING_TO_BE_REPLACED_ID",
   tmdbId: "123",
-  text: "Test post",
+  text: "This is a test post",
   image: "test.jpg",
   rating: 5,
   comments: [],
 };
 
-const testUser = {
+const testUser: IUser = {
   firstName: "Test",
   lastName: "test",
   email: "testUser@test.com",
@@ -25,18 +25,19 @@ const testUser = {
   password: "1234567890",
   passwordConfirm: "1234567890",
   image: "img.jpg",
-  comments: [],
+  tokens: [],
+  posts: []
 };
 
 beforeAll(async () => {
   app = await initServer();
   // register
   await UserModel.deleteMany({ email: testUser.email });
-  await request(app).post("/auth/register").send(testUser);
-  const response = await request(app).post("/auth/login").send(testUser);
-  accessToken = response.body.accessToken;
+  const res1 = await request(app).post("/auth/register").send(testUser);
+  testUser._id = res1.body._id;
+  const res2 = await request(app).post("/auth/login").send(testUser);
+  accessToken = res2.body.accessToken;
 });
-
 
 describe("Post tests", () => {
   let createdPostId: string;
@@ -48,7 +49,7 @@ describe("Post tests", () => {
       .set("Authorization", "JWT " + accessToken)
       .expect(201);
 
-    expect(response.body.text).toBe("Test post");
+    expect(response.body.text).toBe(testPost.text);
     createdPostId = response.body._id;
   });
 
@@ -64,7 +65,7 @@ describe("Post tests", () => {
       .set("Authorization", "JWT " + accessToken)
       .expect(200);
 
-    expect(response.body.text).toBe("Test post");
+    expect(response.body.text).toBe(testPost.text);
   });
 
   test("should update a post by ID", async () => {
