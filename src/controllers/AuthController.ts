@@ -8,6 +8,10 @@ const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 
+export interface AuthRequest extends Request {
+  user: { _id: string };
+}
+
 async function register(req: Request, res: Response) {
   const email = req.body.email;
   const password = req.body.password;
@@ -57,32 +61,28 @@ async function login(req: Request, res: Response) {
 
 async function logout(req: Request, res: Response) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
-  if (token == null) return res.sendStatus(401);
+  const refreshToken = authHeader && authHeader.split(" ")[1]; // JWT <token>
+  if (refreshToken == null) return res.sendStatus(401);
 
-  jwt.verify(token, JWT_REFRESH_SECRET, async (err, payload) => {
+  jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, user) => {
     if (err) return res.status(403).send(err.message);
-    const userInfo = payload as { _id: string };
+    const userInfo = user as { _id: string };
     try {
       const user = await UserModel.findById(userInfo._id);
-      if (user == null) res.status(403).send("Invalid request");
-      if (!user.tokens.includes(token)) {
+      // if (user == null) res.status(403).send("Invalid request");
+      if (!user.tokens || !user.tokens.includes(refreshToken)) {
         user.tokens = []; // invalidate all user tokens
         await user.save();
         return res.status(403).send("Invalid request");
       }
 
-      user.tokens.splice(user.tokens.indexOf(token), 1);
+      user.tokens = user.tokens.filter((t) => t !== refreshToken);
       await user.save();
-      return res.status(200).send();
+      return res.sendStatus(200);
     } catch (error) {
       res.status(403).send(error.message);
     }
   });
-}
-
-export interface AuthRequest extends Request {
-  user: { _id: string };
 }
 
 async function refreshToken(req: Request, res: Response) {
@@ -96,7 +96,7 @@ async function refreshToken(req: Request, res: Response) {
     try {
       const user = await UserModel.findById(userInfo._id);
       if (user == null) res.status(403).send("Invalid request");
-      if (!user.tokens.includes(token)) {
+      if (!user.tokens || !user.tokens.includes(token)) {
         user.tokens = []; // invalidate all user tokens
         await user.save();
         return res.status(403).send("Invalid request");
@@ -105,7 +105,8 @@ async function refreshToken(req: Request, res: Response) {
       const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
       const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
 
-      user.tokens[user.tokens.indexOf(token)] = refreshToken;
+      user.tokens = user.tokens.filter((t) => t !== refreshToken);
+      user.tokens.push(refreshToken);
       await user.save();
       return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken });
     } catch (error) {

@@ -5,6 +5,7 @@ import authMiddleware from "../auth/authMiddleware";
 const router = express.Router();
 
 router.get("/", PostController.getAll.bind(PostController));
+router.get("/find", authMiddleware, PostController.find.bind(PostController));
 router.get("/:id", PostController.getById.bind(PostController));
 router.post("/", authMiddleware, PostController.create.bind(PostController));
 router.put("/:id", authMiddleware, PostController.updateById.bind(PostController));

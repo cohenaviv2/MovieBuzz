@@ -1,12 +1,12 @@
 import { Document, Schema, model, Types } from 'mongoose';
 
 export interface IComment {
-  creatorId: Types.ObjectId;
+  ownerId: String;
   text: string;
 }
 
 const commentSchema = new Schema<IComment & Document>({
-  creatorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  ownerId: { type: String, ref: 'User', required: true },
   text: { type: String, required: true },
 });
 

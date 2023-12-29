@@ -26,11 +26,26 @@ content-type: application/json
 
 ### REFRESH TOKEN
 
-POST http://localhost:5000/auth/refreshToken
+GET http://localhost:5000/auth/refresh
 Content-Type: application/json
+Authorization: JWT 
+### POST 
 
-### GET COMMENTS
+POST http://localhost:5000/posts
+Content-Type: application/json
+Authorization: JWT 
 
-GET http://localhost:5000/comments
+{
+  "ownerId": "GOING_TO_BE_REPLACED_ID",
+  "tmdbId": "123",
+  "text": "Test post with Google user",
+  "image": "test.jpg",
+  "rating": 5,
+  "comments": []
+}
+
+### LOGOUT
+
+GET http://localhost:5000/auth/logout
 Content-Type: application/json
 Authorization: JWT 

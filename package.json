@@ -4,8 +4,10 @@
   "description": "MovieBuzz: Explore, review, and connect in the world of movies and TV shows",
   "main": "index.js",
   "scripts": {
-    "test": "tsc && jest --detectOpenHandles --forceExit",
-    "testAuth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./src/tests/auth.test",
+    "test": "tsc && jest --detectOpenHandles --runInBand --forceExit",
+    "test-auth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./src/tests/auth.test",
+    "test-posts": "tsc && jest --detectOpenHandles --forceExit --runInBand ./src/tests/posts.test",
+    "test-comments": "tsc && jest --detectOpenHandles --forceExit ./src/tests/comments.test",
     "start": "tsc && node dist/app.js",
     "dev": "nodemon src/app.ts",
     "lint": "eslint . --ext .ts"

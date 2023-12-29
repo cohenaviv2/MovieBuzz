@@ -1,6 +1,18 @@
-import CommentModel, {IComment} from "../models/CommentModel";
-import createController from "./BaseController";
+import { Response } from "express";
+import CommentModel, { IComment } from "../models/CommentModel";
+import { AuthRequest } from "./AuthController";
+import { BaseController } from "./BaseController";
 
-const commentController = createController<IComment>(CommentModel);
+class CommentsController extends BaseController<IComment> {
+  constructor() {
+    super(CommentModel);
+  }
 
-export default commentController;
+  async create(req : AuthRequest, res : Response){
+    const _id = req.user._id;
+    req.body.ownerId = _id;
+    super.create(req,res);
+  }
+}
+
+export default new CommentsController();

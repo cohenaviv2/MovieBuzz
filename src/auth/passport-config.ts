@@ -1,4 +1,5 @@
 import passport from "passport";
+import jwt from "jsonwebtoken";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import UserModel, { IUser } from "../models/UserModel";
 import "dotenv/config";
@@ -6,6 +7,9 @@ import "dotenv/config";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 
 passport.use(
   new GoogleStrategy(
@@ -14,16 +18,24 @@ passport.use(
       clientSecret: GOOGLE_CLIENT_SECRET,
       callbackURL: GOOGLE_CALLBACK_URL,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (googleAccessToken, googleRefreshToken, profile, done) => {
       try {
         // Check if the user already exists in the DB
         let user = await UserModel.findOne({ googleId: profile.id });
         if (user) {
-          return done(null, user);
+          // If the user already exists, update tokens and return user
+          const userInfo = { _id: user._id };
+          const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+          const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
+
+          user.tokens = [refreshToken];
+          await user.save();
+
+          return done(null, { user, accessToken, refreshToken });
         }
 
         // If the user doesn't exist, create a new user
-        const userData: IUser = {
+        const newUser: IUser = {
           firstName: profile.name?.givenName || "",
           lastName: profile.name?.familyName || "",
           email: profile.emails?.[0].value || "",
@@ -36,9 +48,17 @@ passport.use(
           tokens: [],
         };
 
-        user = await UserModel.create(userData);
+        // Generate tokens for the new user
+        user = await UserModel.create(newUser)
+        const userInfo = { _id: user._id };
+        const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
 
-        done(null, user._id);
+        user.tokens = [refreshToken];
+        await user.save();
+
+        return done(null, {accessToken, refreshToken });
+
       } catch (error) {
         done(error, null);
       }
@@ -46,17 +66,15 @@ passport.use(
   )
 );
 
-passport.serializeUser((id: string, done) => {
-  done(null, id);
+passport.serializeUser((user, done) => {
+  // Assuming that the user object contains the necessary information for JWT payload
+  done(null, user);
 });
 
-passport.deserializeUser(async (id: string, done) => {
-  try {
-    const user = await UserModel.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
+passport.deserializeUser((user, done) => {
+  // Deserialize logic can be minimal, as user information is already encoded in the JWT
+  done(null, user);
 });
+
 
 export default passport;

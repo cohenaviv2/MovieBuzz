@@ -12,6 +12,7 @@ function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
   if (token == null) return res.sendStatus(401);
+
   jwt.verify(token, JWT_ACCESS_SECRET, (err, user) => {
     if (err) return res.sendStatus(401);
     req.user = user as { _id: string };
