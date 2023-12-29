@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import UserModel from "../models/UserModel";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
@@ -8,7 +9,7 @@ export interface AuthRequest extends Request {
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 
-function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+function auth(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
   if (token == null) return res.sendStatus(401);
@@ -20,4 +21,13 @@ function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   });
 }
 
-export default authMiddleware;
+
+export async function restrict(req: AuthRequest, res: Response, next: NextFunction) {
+  const user = await UserModel.findById(req.user._id);
+  if (user.role != "admin") {
+    return res.status(403).send("You do not have pemission to this action");
+  }
+  next();
+}
+
+export default auth;

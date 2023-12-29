@@ -27,7 +27,7 @@ const testUser: IUser = {
   passwordConfirm: "1234567890",
   image: "img.jpg",
   tokens: [],
-  posts: [],
+  postIds: [],
 };
 
 beforeAll(async () => {
@@ -40,6 +40,11 @@ beforeAll(async () => {
   accessToken = res2.body.accessToken;
 });
 
+afterAll(async () => {
+  // await PostModel.deleteMany();
+  await mongoose.connection.close();
+});
+
 describe("Post tests", () => {
   test("should create a new post", async () => {
     const response = await request(app)
@@ -50,6 +55,8 @@ describe("Post tests", () => {
     expect(response.body.text).toBe(testPost.text);
     expect(response.body.ownerId).toBe(testUser._id);
     db_post_id = response.body._id;
+    const user = await UserModel.findById(testUser._id);
+    expect(user.postIds[0]).toBe(db_post_id);
   });
 
   test("should get all posts", async () => {
@@ -63,9 +70,7 @@ describe("Post tests", () => {
   });
 
   test("Test Get All posts with one post in DB", async () => {
-    const response = await request(app)
-      .get("/posts")
-      .set("Authorization", "JWT " + accessToken);
+    const response = await request(app).get("/posts");
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
     const rc = response.body[0];
@@ -96,12 +101,15 @@ describe("Post tests", () => {
     // Verify that the post is deleted
     const deletedPost = await PostModel.findById(db_post_id);
     expect(deletedPost).toBeNull();
+    const user = await UserModel.findById(testUser._id);
+    expect(user.postIds.indexOf(db_post_id)).toBe(-1);
   });
 
   test("should get all 2 user posts", async () => {
     // Post 1 request
     const post1 = testPost;
     post1.text = "Text post 1";
+    post1.tmdbId = "123"; // Unique
     const res1 = await request(app)
       .post("/posts")
       .send(post1)
@@ -110,6 +118,7 @@ describe("Post tests", () => {
     // Post 2 request
     const post2 = testPost;
     post2.text = "Text post 2";
+    post2.tmdbId = "456"; // Unique
     const res2 = await request(app)
       .post("/posts")
       .send(post2)
@@ -125,10 +134,5 @@ describe("Post tests", () => {
     expect(response.body[0].text).toBe("Text post 1");
     expect(response.body[1].ownerId).toBe(testUser._id);
     expect(response.body[1].text).toBe("Text post 2");
-  });
-
-  afterAll(async () => {
-    await PostModel.deleteMany();
-    await mongoose.connection.close();
   });
 });

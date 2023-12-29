@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-import User from "../models/UserModel";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import UserModel from "../models/UserModel";
@@ -19,11 +18,11 @@ async function register(req: Request, res: Response) {
     return res.status(400).send("missing email or password");
   }
   try {
-    const findUser = await User.findOne({ email: email });
+    const findUser = await UserModel.findOne({ email: email });
     if (findUser != null) {
       return res.status(406).send("email already exists");
     }
-    const user = await User.create(req.body);
+    const user = await UserModel.create(req.body);
     return res.status(201).send({ _id: user._id });
   } catch (err) {
     return res.status(400).send({ status: "fail", message: err.message });
@@ -38,7 +37,7 @@ async function login(req: Request, res: Response) {
       return res.status(400).send("Please provide email and password");
     }
 
-    const user = await User.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email });
     if (user == null) {
       return res.status(401).send("Incorrect email or password");
     }
@@ -116,18 +115,10 @@ async function refreshToken(req: Request, res: Response) {
   });
 }
 
-async function restrict(req: AuthRequest, res: Response, next: NextFunction) {
-  const user = await User.findById(req.user._id);
-  if (user.role != "admin") {
-    return res.status(403).send("You do not have pemission to this action");
-  }
-  next();
-}
 
 export default {
   register,
   login,
   logout,
-  restrict,
   refreshToken,
 };

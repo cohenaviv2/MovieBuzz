@@ -44,7 +44,7 @@ passport.use(
           password: "default",
           passwordConfirm: "default",
           googleId: profile.id,
-          posts: [],
+          postIds: [],
           tokens: [],
         };
 

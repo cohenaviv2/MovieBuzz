@@ -10,7 +10,7 @@ export interface IUser {
   passwordConfirm: string;
   image: string;
   googleId?:string;
-  posts: Types.ObjectId[];
+  postIds: string[];
   tokens: string[];
   _id?:string;
 }
@@ -36,10 +36,8 @@ const userSchema = new Schema<IUser & Document>({
     },
   },
   googleId: {type:String},
-  posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-  tokens : {
-    type: [String]
-  }
+  postIds: { type: [String], ref: 'Post' },
+  tokens : {type: [String]}
 });
 
 userSchema.pre('save', async function (next) {

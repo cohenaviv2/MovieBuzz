@@ -8,6 +8,7 @@
     "test-auth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./src/tests/auth.test",
     "test-posts": "tsc && jest --detectOpenHandles --forceExit --runInBand ./src/tests/posts.test",
     "test-comments": "tsc && jest --detectOpenHandles --forceExit ./src/tests/comments.test",
+    "test-user": "tsc && jest --detectOpenHandles --forceExit ./src/tests/user.test",
     "start": "tsc && node dist/app.js",
     "dev": "nodemon src/app.ts",
     "lint": "eslint . --ext .ts"

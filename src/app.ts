@@ -21,6 +21,8 @@ initServer().then((app) => {
     http://localhost:${PORT}/auth/login
     http://localhost:${PORT}/auth/register
     http://localhost:${PORT}/auth/logout
-    http://localhost:${PORT}/auth/google`);
+    http://localhost:${PORT}/auth/google
+    \nUser:
+    http://localhost:${PORT}/user/:id`);
   });
 });

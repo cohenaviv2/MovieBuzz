@@ -10,7 +10,7 @@ export class BaseController<ModelType> {
   async getAll(req: Request, res: Response) {
     try {
       const items = await this.model.find();
-      res.send(items);
+      return res.send(items);
     } catch (err) {
       console.error(err);
       res.status(500).send({ error: 'Internal Server Error' });
@@ -22,12 +22,12 @@ export class BaseController<ModelType> {
       if (req.params.id) {
         const itemId = req.params.id;
         const itemById = await this.model.findById(itemId);
-        res.send(itemById);
+        return res.send(itemById);
       } else {
       }
     } catch (err) {
       console.error(err);
-      res.status(500).send({ error: 'Internal Server Error' });
+      return res.status(500).send({ error: "Internal Server Error" });
     }
   }
 
@@ -35,10 +35,10 @@ export class BaseController<ModelType> {
     try {
       const itemData = req.body;
       const newItem = await this.model.create(itemData);
-      res.status(201).send(newItem);
+      return res.status(201).send(newItem);
     } catch (err) {
       console.error(err);
-      res.status(500).send({ error: err.message });
+      return res.status(500).send({ error: err.message });
     }
   }
 
@@ -51,10 +51,10 @@ export class BaseController<ModelType> {
       if (!updatedItem) {
         return res.status(404).send({ error: 'Item not found' });
       }
-      res.status(200).send(updatedItem);
+      return res.status(200).send(updatedItem);
     } catch (error) {
       console.error(error);
-      res.status(500).send({ error: 'Internal Server Error' });
+      return res.status(500).send({ error: "Internal Server Error" });
     }
   }
 
@@ -65,10 +65,10 @@ export class BaseController<ModelType> {
       if (!deletedItem) {
         return res.status(404).send({ error: 'Comment not found' });
       }
-      res.status(204).send();
+      return res.status(204).send();
     } catch (err) {
       console.error(err);
-      res.status(500).send({ error: 'Internal Server Error' });
+      return res.status(500).send({ error: "Internal Server Error" });
     }
   }
 }

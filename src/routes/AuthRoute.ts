@@ -1,9 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import session from "express-session";
-import passport from "../auth/passport-config";
+import passport from "../common/passport-config";
 import AuthController from "../controllers/AuthController";
-import authMiddleware from "../auth/authMiddleware";
 
 const router = express.Router();
 

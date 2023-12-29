@@ -11,7 +11,7 @@ class CommentsController extends BaseController<IComment> {
   async create(req : AuthRequest, res : Response){
     const _id = req.user._id;
     req.body.ownerId = _id;
-    super.create(req,res);
+    return super.create(req,res);
   }
 }
 

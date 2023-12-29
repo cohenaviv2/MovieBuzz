@@ -14,7 +14,7 @@ const postSchema = new Schema<IPost & Document>({
   text: { type: String, required: true },
   image: { type: String, required: true },
   rating: { type: Number, required: true },
-  tmdbId: { type: String, required: true },
+  tmdbId: { type: String, required: true, unique:true },
   comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
 });
 

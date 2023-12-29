@@ -23,7 +23,7 @@ const testUser: IUser = {
   passwordConfirm: "1234567890",
   image: "img.jpg",
   tokens: [],
-  posts: [],
+  postIds: [],
 };
 
 beforeAll(async () => {
@@ -34,6 +34,11 @@ beforeAll(async () => {
   testUser._id = res1.body._id;
   const res2 = await request(app).post("/auth/login").send(testUser);
   accessToken = res2.body.accessToken;
+});
+
+afterAll(async () => {
+  await CommentModel.deleteMany();
+  await mongoose.connection.close();
 });
 
 describe("Comment tests", () => {
@@ -60,16 +65,16 @@ describe("Comment tests", () => {
     expect(response.body.text).toBe(testComment.text);
   });
 
-    test("Test Get All comments with one comment in DB", async () => {
-      const response = await request(app)
-        .get("/comments")
-        .set("Authorization", "JWT " + accessToken);
-      expect(response.statusCode).toBe(200);
-      expect(response.body.length).toBe(1);
-      const rc = response.body[0];
-      expect(rc.text).toBe(testComment.text);
-      expect(rc.ownerId).toBe(testUser._id);
-    });
+  test("Test Get All comments with one comment in DB", async () => {
+    const response = await request(app)
+      .get("/comments")
+      .set("Authorization", "JWT " + accessToken);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(1);
+    const rc = response.body[0];
+    expect(rc.text).toBe(testComment.text);
+    expect(rc.ownerId).toBe(testUser._id);
+  });
 
   test("should update a comment by ID", async () => {
     const updatedData: Partial<IComment> = {
@@ -93,10 +98,5 @@ describe("Comment tests", () => {
     // Verify that the comment is deleted
     const deletedComment = await CommentModel.findById(db_comment_id);
     expect(deletedComment).toBeNull();
-  });
-
-  afterAll(async () => {
-    await CommentModel.deleteMany();
-    await mongoose.connection.close();
   });
 });

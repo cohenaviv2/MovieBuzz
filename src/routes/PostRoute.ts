@@ -1,14 +1,14 @@
 import express from "express";
 import PostController from "../controllers/PostController";
-import authMiddleware from "../auth/authMiddleware";
+import auth from "../common/auth-middleware";
 
 const router = express.Router();
 
 router.get("/", PostController.getAll.bind(PostController));
-router.get("/find", authMiddleware, PostController.find.bind(PostController));
+router.get("/find", auth, PostController.find.bind(PostController));
 router.get("/:id", PostController.getById.bind(PostController));
-router.post("/", authMiddleware, PostController.create.bind(PostController));
-router.put("/:id", authMiddleware, PostController.updateById.bind(PostController));
-router.delete("/:id", authMiddleware, PostController.deleteById.bind(PostController));
+router.post("/", auth, PostController.create.bind(PostController));
+router.put("/:id", auth, PostController.updateById.bind(PostController));
+router.delete("/:id", auth, PostController.deleteById.bind(PostController));
 
 export default router;
