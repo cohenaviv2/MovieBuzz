@@ -16,37 +16,37 @@ afterAll(async () => {
 describe("TV Show API tests", () => {
   const showId: number = 63770;
 
-  test("GET /tv/by-id/:showId should return a TV show by ID", async () => {
+  test("Test get tv show by ID", async () => {
     const response = await request(app).get(`/tv/by-id/${showId}`);
     expect(response.status).toBe(200);
     expect(response.body.id).toBe(showId);
   });
 
-  test("GET /tv/search should return search results", async () => {
+  test("Test search tv shows results", async () => {
     const response = await request(app).get("/tv/search").query({ query: "Breaking Bad" });
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  test("GET /tv/popular should return popular TV shows", async () => {
+  test("Test get popular tv shows", async () => {
     const response = await request(app).get("/tv/popular");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  test("GET /tv/top_rated should return top-rated TV shows", async () => {
+  test("Test get top rated tv shows", async () => {
     const response = await request(app).get("/tv/top_rated");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  test("GET /tv/on_the_air should return on-the-air TV shows", async () => {
+  test("Test get on-the-air tv shows", async () => {
     const response = await request(app).get("/tv/on_the_air");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  test("GET /tv/by-genre/:genreId should return TV shows by genre", async () => {
+  test("Test get tv shows by genre ID", async () => {
     // * genreId 18 corresponds to the "Drama" genre *
     const response = await request(app).get("/tv/by-genre/18");
     expect(response.status).toBe(200);
@@ -54,7 +54,7 @@ describe("TV Show API tests", () => {
   });
 
   // Tests for error scenarios
-  test("GET /tv/by-id/:invalidId should return 404 for an invalid TV show ID", async () => {
+  test("Test tv show with invalid ID", async () => {
     const response = await request(app).get("/tv/by-id/invalidId");
     expect(response.status).toBe(404);
   });

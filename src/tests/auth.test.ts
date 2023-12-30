@@ -2,28 +2,27 @@ import request from "supertest";
 import initServer from "../server";
 import mongoose from "mongoose";
 import { Express } from "express";
-import UserModel from "../models/UserModel";
+import UserModel, { IUser } from "../models/UserModel";
 import CommentModel, { IComment } from "../models/CommentModel";
 
 let app: Express;
 let accessToken: string;
 let refreshToken: string;
-let newAccessToken;
-let newRefreshToken;
+let newAccessToken: string;
+let newRefreshToken: string;
 
-const testUser = {
-  firstName: "Test",
-  lastName: "test",
+const testUser: IUser = {
+  fullName: "Test test",
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  passwordConfirm: "1234567890",
   image: "img.jpg",
-  comments: [],
+  tokens: [],
 };
 
 const testComment: IComment = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
+  postId: "132456789",
   text: "Test comment",
 };
 

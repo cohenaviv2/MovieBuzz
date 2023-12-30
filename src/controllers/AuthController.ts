@@ -45,6 +45,9 @@ async function login(req: Request, res: Response) {
     if (!match) {
       return res.status(401).send("Incorrect email or password");
     }
+    if (user.googleId != null) {
+      return res.status(401).send("Unauthorize, use Google login");
+    }
     const userInfo = { _id: user._id };
     const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
     const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
@@ -60,7 +63,7 @@ async function login(req: Request, res: Response) {
 
 async function logout(req: Request, res: Response) {
   const authHeader = req.headers["authorization"];
-  const refreshToken = authHeader && authHeader.split(" ")[1]; // JWT <token>
+  const refreshToken = authHeader && authHeader.split(" ")[1]; // JWT <refreshToken>
   if (refreshToken == null) return res.sendStatus(401);
 
   jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, user) => {
@@ -75,7 +78,7 @@ async function logout(req: Request, res: Response) {
         return res.status(403).send("Invalid request");
       }
 
-      user.tokens = user.tokens.filter((t) => t !== refreshToken);
+      user.tokens.splice(user.tokens.indexOf(refreshToken),1);
       await user.save();
       return res.sendStatus(200);
     } catch (error) {
@@ -86,35 +89,33 @@ async function logout(req: Request, res: Response) {
 
 async function refreshToken(req: Request, res: Response) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // JWT <token>
-  if (token == null) return res.sendStatus(401);
+  const refreshToken = authHeader && authHeader.split(" ")[1]; // JWT <refreshToken>
+  if (refreshToken == null) return res.sendStatus(401);
 
-  jwt.verify(token, JWT_REFRESH_SECRET, async (err, user) => {
+  jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, user) => {
     if (err) return res.status(403).send(err.message);
     const userInfo = user as { _id: string };
     try {
       const user = await UserModel.findById(userInfo._id);
       if (user == null) res.status(403).send("Invalid request");
-      if (!user.tokens || !user.tokens.includes(token)) {
+      if (!user.tokens || !user.tokens.includes(refreshToken)) {
         user.tokens = []; // invalidate all user tokens
         await user.save();
         return res.status(403).send("Invalid request");
       }
 
-      const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
-      const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
+      const newAccessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const newRefreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
 
-      user.tokens = user.tokens.filter((t) => t !== refreshToken);
-      user.tokens.push(refreshToken);
+      user.tokens[user.tokens.indexOf(refreshToken)] = newRefreshToken;
       await user.save();
-      return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken });
+      return res.status(200).send({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (error) {
       console.log(error.message);
       res.status(403).send(error.message);
     }
   });
 }
-
 
 export default {
   register,

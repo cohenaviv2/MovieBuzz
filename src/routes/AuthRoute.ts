@@ -6,10 +6,10 @@ import AuthController from "../controllers/AuthController";
 
 const router = express.Router();
 
-interface Tokens {
-  accessToken: string;
-  refreshToken: string;
-}
+// interface Tokens {
+//   accessToken: string;
+//   refreshToken: string;
+// }
 
 // Set up Google session middleware
 router.use(session({ secret: process.env.GOOGLE_CLIENT_SECRET, resave: false, saveUninitialized: true }));
@@ -22,8 +22,7 @@ router.get("/logout", AuthController.logout);
 router.get("/refresh", AuthController.refreshToken);
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => {
-  const { accessToken, refreshToken } = req.user as Tokens;
-  res.json({ accessToken: accessToken, refreshToken: refreshToken });
+  res.send(req.user);
 });
 
 export default router;

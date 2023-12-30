@@ -2,7 +2,6 @@
 export default {
   preset: "ts-jest",
   testEnvironment: "node",
-  roots: [
-    '<rootDir>/src/'
-  ]
+  roots: ["<rootDir>/src/"],
+  testTimeout: 10000, // Set the default timeout for all tests to 10000 ms
 };

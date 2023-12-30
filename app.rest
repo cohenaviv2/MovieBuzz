@@ -4,12 +4,10 @@ POST http://localhost:5000/auth/register
 content-type: application/json
 
 {
-  "firstName": "Test",
-  "lastName": "test",
+  "fullName": "Test test",
   "email": "testAdmin@test.com",
-  "role": "admin",
+  "role": "user",
   "password": "1234567890",
-  "passwordConfirm": "1234567890",
   "image": "img.jpg",
   "comments": []
 }
@@ -28,31 +26,54 @@ content-type: application/json
 
 GET http://localhost:5000/auth/refresh
 Content-Type: application/json
-Authorization: JWT 
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTkwNDZjZWM4NTdjMzc0M2E2NjZlOWIiLCJpYXQiOjE3MDM5NTQzOTJ9.bNAoHoJemGMpgib1V3Dp8BIfIT9Febgslb_bA-yUgiQ
 
 ### POST 
 
 POST http://localhost:5000/posts
 Content-Type: application/json
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXCJ9.eyJfaWQiOiI2NTkwMzZhY2Y0N2I3ZGY1NmRiODBlYzAiLCJpYXQiOjE3MDM5NTAwMjIsImV4cCI6MTcwMzk1MzYyMn0.dkufp48hchx_3XOnk67XbOUpQ0BqBBbAA7G4MPBtu_I
+
+{
+  "ownerId": "GOING_TO_BE_REPLACED_ID",
+  "tmdbId": "666666",
+  "text": "Test post 6",
+  "image": "test.jpg",
+  "rating": 1,
+  "comments": []
+}
+
+### COMMENT 
+
+POST http://localhost:5000/comments
+Content-Type: application/json
 Authorization: JWT 
 
 {
   "ownerId": "GOING_TO_BE_REPLACED_ID",
-  "tmdbId": "123",
-  "text": "Test post with Google user",
-  "image": "test.jpg",
-  "rating": 5,
-  "comments": []
+  "postId": "65902cf0d5535e2e07bfc103",
+  "text": "xxxxxx"
 }
 
 ### LOGOUT
 
 GET http://localhost:5000/auth/logout
 Content-Type: application/json
-Authorization: JWT 
-
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTkwNDZjZWM4NTdjMzc0M2E2NjZlOWIiLCJpYXQiOjE3MDM5NTQzNTd9.Ke9-gtNW4gJ7_MUblWKSGY2o5X41BJ4eWjlQk3hp37g
 ### USER
 
 GET http://localhost:5000/user
 Content-Type: application/json
 Authorization: JWT 
+
+### RECENT POSTS
+GET http://localhost:5000/posts/recent
+Content-Type: application/json
+
+### TOP RATED POSTS
+GET http://localhost:5000/posts/top-rated
+Content-Type: application/json
+
+### MOST COMMENTED POSTS
+GET http://localhost:5000/posts/most-commented
+Content-Type: application/json

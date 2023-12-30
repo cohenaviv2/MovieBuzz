@@ -11,19 +11,17 @@ let db_comment_id: string;
 
 const testComment: IComment = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
+  postId: "123456789",
   text: "Test comment",
 };
 
 const testUser: IUser = {
-  firstName: "Test",
-  lastName: "test",
+  fullName: "Test",
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  passwordConfirm: "1234567890",
   image: "img.jpg",
   tokens: [],
-  postIds: [],
 };
 
 beforeAll(async () => {
@@ -42,9 +40,7 @@ afterAll(async () => {
 });
 
 describe("Comment tests", () => {
-  let createdCommentId: string;
-
-  test("should create a new comment", async () => {
+  test("Test create new comment", async () => {
     const response = await request(app)
       .post("/comments")
       .send(testComment)
@@ -55,14 +51,15 @@ describe("Comment tests", () => {
     db_comment_id = response.body._id;
   });
 
-  test("should get all comments", async () => {
+  test("Test get all comments", async () => {
     const response = await request(app).get("/comments").expect(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
 
-  test("should get a comment by ID", async () => {
+  test("Test get comment by ID", async () => {
     const response = await request(app).get(`/comments/${db_comment_id}`).expect(200);
     expect(response.body.text).toBe(testComment.text);
+    expect(response.body.postId).toEqual(testComment.postId);
   });
 
   test("Test Get All comments with one comment in DB", async () => {
@@ -76,7 +73,7 @@ describe("Comment tests", () => {
     expect(rc.ownerId).toBe(testUser._id);
   });
 
-  test("should update a comment by ID", async () => {
+  test("Test update comment by ID", async () => {
     const updatedData: Partial<IComment> = {
       text: "Updated comment",
     };
@@ -90,7 +87,7 @@ describe("Comment tests", () => {
     expect(updatedComment?.text).toBe(updatedData.text);
   });
 
-  test("should delete a comment by ID", async () => {
+  test("Test delete comment by ID", async () => {
     await request(app)
       .delete(`/comments/${db_comment_id}`)
       .set("Authorization", "JWT " + accessToken)
@@ -99,4 +96,38 @@ describe("Comment tests", () => {
     const deletedComment = await CommentModel.findById(db_comment_id);
     expect(deletedComment).toBeNull();
   });
+
+  test("Test get all 2 user comments", async () => {
+    // Comment 1 post
+    const comments1 = testComment;
+    comments1.text = "Test comments 1";
+    comments1.postId = "123";
+    const res1 = await request(app)
+      .post("/comments")
+      .send(comments1)
+      .set("Authorization", "JWT " + accessToken)
+      .expect(201);
+    // Comment 2 post
+    const comment2 = testComment;
+    comment2.text = "Test comments 2";
+    comment2.postId = "456";
+    const res2 = await request(app)
+      .post("/comments")
+      .send(comment2)
+      .set("Authorization", "JWT " + accessToken)
+      .expect(201);
+
+    const response = await request(app)
+      .get("/comments/find")
+      .set("Authorization", "JWT " + accessToken);
+    expect(200);
+    expect(response.body.length).toEqual(2);
+    expect(response.body[0].ownerId).toBe(testUser._id);
+    expect(response.body[0].text).toBe("Test comments 1");
+    expect(response.body[0].postId).toBe("123");
+    expect(response.body[1].ownerId).toBe(testUser._id);
+    expect(response.body[1].text).toBe("Test comments 2");
+    expect(response.body[1].postId).toBe("456");
+  });
+
 });

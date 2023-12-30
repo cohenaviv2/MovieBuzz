@@ -6,7 +6,7 @@ import "dotenv/config";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL
+const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
@@ -30,26 +30,26 @@ passport.use(
 
           user.tokens = [refreshToken];
           await user.save();
+          const userId = userInfo._id;
 
-          return done(null, { user, accessToken, refreshToken });
+          return done(null, { userId, accessToken, refreshToken });
         }
 
         // If the user doesn't exist, create a new user
+        const firstName = profile.name?.givenName || "";
+        const lastName = profile.name?.familyName || "";
         const newUser: IUser = {
-          firstName: profile.name?.givenName || "",
-          lastName: profile.name?.familyName || "",
+          fullName: firstName + " " + lastName,
           email: profile.emails?.[0].value || "",
           image: profile.photos?.[0].value || "",
           role: "user", // Set a default role
           password: "default",
-          passwordConfirm: "default",
           googleId: profile.id,
-          postIds: [],
           tokens: [],
         };
 
         // Generate tokens for the new user
-        user = await UserModel.create(newUser)
+        user = await UserModel.create(newUser);
         const userInfo = { _id: user._id };
         const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
         const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
@@ -57,8 +57,9 @@ passport.use(
         user.tokens = [refreshToken];
         await user.save();
 
-        return done(null, {accessToken, refreshToken });
+        const userId = userInfo._id;
 
+        return done(null, { userId, accessToken, refreshToken });
       } catch (error) {
         done(error, null);
       }
@@ -75,6 +76,5 @@ passport.deserializeUser((user, done) => {
   // Deserialize logic can be minimal, as user information is already encoded in the JWT
   done(null, user);
 });
-
 
 export default passport;

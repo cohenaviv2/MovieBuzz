@@ -22,6 +22,7 @@ function auth(req: AuthRequest, res: Response, next: NextFunction) {
 }
 
 
+
 export async function restrict(req: AuthRequest, res: Response, next: NextFunction) {
   const user = await UserModel.findById(req.user._id);
   if (user.role != "admin") {

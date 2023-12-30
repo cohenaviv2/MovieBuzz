@@ -23,6 +23,8 @@ initServer().then((app) => {
     http://localhost:${PORT}/auth/logout
     http://localhost:${PORT}/auth/google
     \nUser:
-    http://localhost:${PORT}/user/:id`);
+    http://localhost:${PORT}/user/:id
+    \nPosts:
+    http://localhost:${PORT}/posts/recent`);
   });
 });

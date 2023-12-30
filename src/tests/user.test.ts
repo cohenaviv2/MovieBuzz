@@ -7,31 +7,25 @@ import UserModel, { IUser } from "../models/UserModel";
 let app: Express;
 let userAccessToken: string;
 let adminAccessToken: string;
-let userId:string;
-let adminId:string;
+let userId: string;
+let adminId: string;
 
 const testUser: IUser = {
-  firstName: "Test",
-  lastName: "test",
+  fullName: "Test test",
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  passwordConfirm: "1234567890",
   image: "img.jpg",
   tokens: [],
-  postIds: [],
 };
 
 const testAdmin: IUser = {
-  firstName: "Admin",
-  lastName: "admin",
+  fullName: "Admin admin",
   email: "testAdmin@test.com",
   role: "admin",
   password: "1234567890",
-  passwordConfirm: "1234567890",
   image: "img.jpg",
   tokens: [],
-  postIds: [],
 };
 
 beforeAll(async () => {
@@ -59,14 +53,14 @@ afterAll(async () => {
 });
 
 describe("Post tests", () => {
-  test("Get user profile", async () => {
+  test("Test get user profile", async () => {
     const response = await request(app)
       .get(`/user/${userId}`)
       .set("Authorization", "JWT " + adminAccessToken);
     expect(200);
   });
 
-  test("Get user profile with invalid id", async () => {
+  test("Test get user profile with invalid ID", async () => {
     const invalidId = userId + "123";
     const response = await request(app)
       .get(`/user/${invalidId}`)
@@ -74,47 +68,47 @@ describe("Post tests", () => {
     expect(403);
   });
 
-  test("Get user profile without access token", async () => {
+  test("Test get user profile without access token", async () => {
     const response = await request(app).get(`/user/${userId}`);
     expect(401);
   });
 
-  test("Get all user with admin access", async () => {
+  test("Test get all user with admin access", async () => {
     const response = await request(app)
       .get("/user")
       .set("Authorization", "JWT " + adminAccessToken);
     expect(200);
   });
 
-  test("Get all user with invalid access", async () => {
+  test("Test get all user with invalid access (user)", async () => {
     const response = await request(app)
       .get("/user")
       .set("Authorization", "JWT " + userAccessToken);
     expect(403);
   });
 
-  test("Update user profile", async () => {
+  test("Test update user profile", async () => {
     const updatedUser = testUser;
-    updatedUser.firstName = "Updated";
+    updatedUser.fullName = "Updated";
 
     const response = await request(app)
       .put(`/user/${userId}`)
       .send(updatedUser)
       .set("Authorization", "JWT " + userAccessToken)
       .expect(200);
-    expect(response.body.firstName).toBe(testUser.firstName);
+    expect(response.body.fullName).toBe(testUser.fullName);
     const updatedUserDb = await UserModel.findById(userId);
-    expect(updatedUserDb?.firstName).toBe(updatedUser.firstName);
+    expect(updatedUserDb?.fullName).toBe(updatedUser.fullName);
   });
 
-    test("Delete user without admin access", async () => {
-      await request(app)
-        .delete(`/user/${adminId}`)
-        .set("Authorization", "JWT " + userAccessToken)
-        .expect(403);
-    });
+  test("Test delete user without admin access", async () => {
+    await request(app)
+      .delete(`/user/${adminId}`)
+      .set("Authorization", "JWT " + userAccessToken)
+      .expect(403);
+  });
 
-  test("Delete user with admin access", async () => {
+  test("Test delete user with admin access", async () => {
     await request(app)
       .delete(`/user/${userId}`)
       .set("Authorization", "JWT " + adminAccessToken)
