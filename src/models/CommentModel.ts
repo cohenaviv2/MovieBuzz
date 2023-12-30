@@ -1,8 +1,8 @@
-import { Document, Schema, model, Types } from 'mongoose';
+import { Document, Schema, model, Types } from "mongoose";
 
 export interface IComment {
   ownerId: string;
-  postId: string
+  postId: string;
   text: string;
 }
 
@@ -12,6 +12,6 @@ const commentSchema = new Schema<IComment & Document>({
   text: { type: String, required: true },
 });
 
-const CommentModel = model<IComment & Document>('Comment', commentSchema);
+const CommentModel = model<IComment & Document>("Comment", commentSchema);
 
 export default CommentModel;

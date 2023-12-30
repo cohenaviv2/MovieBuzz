@@ -3,7 +3,8 @@ import initServer from "../server";
 import mongoose from "mongoose";
 import { Express } from "express";
 import UserModel, { IUser } from "../models/UserModel";
-import CommentModel, { IComment } from "../models/CommentModel";
+import CommentModel from "../models/CommentModel";
+import PostModel, { IPost } from "../models/PostModel";
 
 let app: Express;
 let accessToken: string;
@@ -11,7 +12,7 @@ let refreshToken: string;
 let newAccessToken: string;
 let newRefreshToken: string;
 
-const testUser: IUser = {
+let testUser: IUser = {
   fullName: "Test test",
   email: "testUser@test.com",
   role: "user",
@@ -20,20 +21,27 @@ const testUser: IUser = {
   tokens: [],
 };
 
-const testComment: IComment = {
+let testPost: IPost = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
-  postId: "132456789",
-  text: "Test comment",
+  tmdbId: "123",
+  text: "post",
+  image: "test.jpg",
+  rating: 5,
+  commentIds: [],
+  createdAt: new Date(Date.now()),
 };
 
 beforeAll(async () => {
   app = await initServer();
   await UserModel.deleteMany({ email: testUser.email });
   await CommentModel.deleteMany();
+  await PostModel.deleteMany();
 });
 
 afterAll(async () => {
   await UserModel.deleteMany({ email: testUser.email });
+  await CommentModel.deleteMany();
+  await PostModel.deleteMany();
   await mongoose.connection.close();
 });
 
@@ -65,22 +73,22 @@ describe("Auth tests", () => {
   });
 
   test("Test forbidden access without token", async () => {
-    const response = await request(app).post("/comments").send(testComment);
+    const response = await request(app).post("/posts").send(testPost);
     expect(response.statusCode).toBe(401);
   });
 
   test("Test access with valid token", async () => {
     const response = await request(app)
-      .post("/comments")
-      .send(testComment)
+      .post("/posts")
+      .send(testPost)
       .set("Authorization", "JWT " + accessToken);
     expect(response.statusCode).toBe(201);
   });
 
   test("Test access with invalid token", async () => {
     const response = await request(app)
-      .post("/comments")
-      .send(testComment)
+      .post("/posts")
+      .send(testPost)
       .set("Authorization", "JWT 1" + accessToken);
     expect(response.statusCode).toBe(401);
   });
@@ -89,8 +97,8 @@ describe("Auth tests", () => {
     jest.setTimeout(10000);
     await new Promise((r) => setTimeout(() => r("done"), 3 * 1000));
     const response = await request(app)
-      .post("/comments")
-      .send(testComment)
+      .post("/posts")
+      .send(testPost)
       .set("Authorization", "JWT " + accessToken);
     expect(response.statusCode).not.toEqual(200);
   });
@@ -106,10 +114,11 @@ describe("Auth tests", () => {
     expect(newAccessToken).toBeDefined();
     expect(newRefreshToken).toBeDefined();
 
-    testComment.text = testComment.text + " 1";
+    testPost.text = testPost.text + " 1";
+    testPost.tmdbId = "xxxxx";
     const response2 = await request(app)
-      .post("/comments")
-      .send(testComment)
+      .post("/posts")
+      .send(testPost)
       .set("Authorization", "JWT " + newAccessToken);
     expect(response2.statusCode).toBe(201);
   });

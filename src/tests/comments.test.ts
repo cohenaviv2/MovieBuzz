@@ -4,18 +4,30 @@ import mongoose from "mongoose";
 import initServer from "../server";
 import UserModel, { IUser } from "../models/UserModel";
 import CommentModel, { IComment } from "../models/CommentModel";
+import PostModel, { IPost } from "../models/PostModel";
 
 let app: Express;
 let accessToken: string;
+let db_post_id: string;
 let db_comment_id: string;
 
-const testComment: IComment = {
+let testComment: IComment = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
-  postId: "123456789",
-  text: "Test comment",
+  postId: "12345123456798",
+  text: "Test",
 };
 
-const testUser: IUser = {
+let testPost: IPost = {
+  ownerId: "GOING_TO_BE_REPLACED_ID",
+  tmdbId: "123",
+  text: "post",
+  image: "test.jpg",
+  rating: 5,
+  commentIds: [],
+  createdAt: new Date(Date.now()),
+};
+
+let testUser: IUser = {
   fullName: "Test",
   email: "testUser@test.com",
   role: "user",
@@ -28,14 +40,24 @@ beforeAll(async () => {
   app = await initServer();
   await UserModel.deleteMany({ email: testUser.email });
   await CommentModel.deleteMany();
+  await PostModel.deleteMany();
   const res1 = await request(app).post("/auth/register").send(testUser);
   testUser._id = res1.body._id;
   const res2 = await request(app).post("/auth/login").send(testUser);
   accessToken = res2.body.accessToken;
+
+  const res3 = await request(app)
+    .post("/posts")
+    .send(testPost)
+    .set("Authorization", "JWT " + accessToken);
+  db_post_id = res3.body._id;
+  testComment.postId = db_post_id;
 });
 
 afterAll(async () => {
   await CommentModel.deleteMany();
+  await PostModel.deleteMany();
+  await UserModel.deleteMany({ email: testUser.email });
   await mongoose.connection.close();
 });
 
@@ -101,7 +123,7 @@ describe("Comment tests", () => {
     // Comment 1 post
     const comments1 = testComment;
     comments1.text = "Test comments 1";
-    comments1.postId = "123";
+    comments1.postId = testComment.postId;
     const res1 = await request(app)
       .post("/comments")
       .send(comments1)
@@ -110,7 +132,7 @@ describe("Comment tests", () => {
     // Comment 2 post
     const comment2 = testComment;
     comment2.text = "Test comments 2";
-    comment2.postId = "456";
+    comment2.postId = testComment.postId;
     const res2 = await request(app)
       .post("/comments")
       .send(comment2)
@@ -124,10 +146,9 @@ describe("Comment tests", () => {
     expect(response.body.length).toEqual(2);
     expect(response.body[0].ownerId).toBe(testUser._id);
     expect(response.body[0].text).toBe("Test comments 1");
-    expect(response.body[0].postId).toBe("123");
+    expect(response.body[0].postId).toBe(testComment.postId);
     expect(response.body[1].ownerId).toBe(testUser._id);
     expect(response.body[1].text).toBe("Test comments 2");
-    expect(response.body[1].postId).toBe("456");
+    expect(response.body[1].postId).toBe(testComment.postId);
   });
-
 });

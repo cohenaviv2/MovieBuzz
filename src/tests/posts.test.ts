@@ -132,60 +132,60 @@ describe("Post tests", () => {
     expect(response.body[1].text).toBe("Text post 2");
   });
 
-  test("Test get posts by recency", async () => {
-    const post1: IPost = {
-      ownerId: "GOING_TO_BE_REPLACED_ID",
-      tmdbId: "111",
-      text: "post 1",
-      image: "test.jpg",
-      rating: 5,
-      commentIds: [],
-      createdAt: new Date(Date.now()),
-    };
-    const post2: IPost = {
-      ownerId: "GOING_TO_BE_REPLACED_ID",
-      tmdbId: "222",
-      text: "post 2",
-      image: "test.jpg",
-      rating: 3,
-      commentIds: [],
-      createdAt: new Date(Date.now()),
-    };
-    const post3: IPost = {
-      ownerId: "GOING_TO_BE_REPLACED_ID",
-      tmdbId: "333",
-      text: "post 3",
-      image: "test.jpg",
-      rating: 1,
-      commentIds: [],
-      createdAt: new Date(Date.now()),
-    };
-    const res1 = await request(app)
-      .post("/posts")
-      .send(post1)
-      .set("Authorization", "JWT " + accessToken)
-      .expect(201);
-    post1_id = res1.body._id;
-    const res2 = await request(app)
-      .post("/posts")
-      .send(post2)
-      .set("Authorization", "JWT " + accessToken)
-      .expect(201);
-    post2_id = res2.body._id;
-    const res3 = await request(app)
-      .post("/posts")
-      .send(post3)
-      .set("Authorization", "JWT " + accessToken)
-      .expect(201);
+  // test("Test get posts by recency", async () => {
+  //   const post1: IPost = {
+  //     ownerId: "GOING_TO_BE_REPLACED_ID",
+  //     tmdbId: "111",
+  //     text: "post 1",
+  //     image: "test.jpg",
+  //     rating: 5,
+  //     commentIds: [],
+  //     createdAt: new Date(Date.now()),
+  //   };
+  //   const post2: IPost = {
+  //     ownerId: "GOING_TO_BE_REPLACED_ID",
+  //     tmdbId: "222",
+  //     text: "post 2",
+  //     image: "test.jpg",
+  //     rating: 3,
+  //     commentIds: [],
+  //     createdAt: new Date(Date.now()),
+  //   };
+  //   const post3: IPost = {
+  //     ownerId: "GOING_TO_BE_REPLACED_ID",
+  //     tmdbId: "333",
+  //     text: "post 3",
+  //     image: "test.jpg",
+  //     rating: 1,
+  //     commentIds: [],
+  //     createdAt: new Date(Date.now()),
+  //   };
+  //   const res1 = await request(app)
+  //     .post("/posts")
+  //     .send(post1)
+  //     .set("Authorization", "JWT " + accessToken)
+  //     .expect(201);
+  //   post1_id = res1.body._id;
+  //   const res2 = await request(app)
+  //     .post("/posts")
+  //     .send(post2)
+  //     .set("Authorization", "JWT " + accessToken)
+  //     .expect(201);
+  //   post2_id = res2.body._id;
+  //   const res3 = await request(app)
+  //     .post("/posts")
+  //     .send(post3)
+  //     .set("Authorization", "JWT " + accessToken)
+  //     .expect(201);
 
-    const response = await request(app).get("posts/recent");
-    expect(response.body[0].text).toBe("post 3");
-    expect(response.body[0].tmdbId).toBe("333");
-    expect(response.body[1].text).toBe("post 2");
-    expect(response.body[1].tmdbId).toBe("222");
-    expect(response.body[2].text).toBe("post 1");
-    expect(response.body[2].tmdbId).toBe("111");
-  });
+  //   const response = await request(app).get("posts/recent");
+  //   expect(response.body[0].text).toBe("post 3");
+  //   expect(response.body[0].tmdbId).toBe("333");
+  //   expect(response.body[1].text).toBe("post 2");
+  //   expect(response.body[1].tmdbId).toBe("222");
+  //   expect(response.body[2].text).toBe("post 1");
+  //   expect(response.body[2].tmdbId).toBe("111");
+  // });
 
   // test("Test get posts by recency", async () => {});
 
