@@ -2,9 +2,8 @@ import axios, { AxiosResponse } from "axios";
 import "dotenv/config";
 
 const API_KEY = process.env.TMDB_API_KEY;
-const BASE_URL = process.env.TMDB_BASE_URL || "https://api.themoviedb.org/3";
-const POSTER_URL =
-  process.env.TMDB_POSTER_URL || "https://image.tmdb.org/t/p/w500";
+const BASE_URL = process.env.TMDB_BASE_URL;
+const POSTER_URL = process.env.TMDB_POSTER_URL;
 
 export interface ITvShow {
   id: number;
@@ -17,14 +16,7 @@ export interface ITvShow {
 }
 
 function mapToTvShow(tmdbTvShow: any): ITvShow {
-  const {
-    id,
-    original_name,
-    overview,
-    first_air_date,
-    genre_ids,
-    original_language,
-  } = tmdbTvShow;
+  const { id, original_name, overview, first_air_date, genre_ids, original_language } = tmdbTvShow;
 
   const mappedTvShow: ITvShow = {
     id: tmdbTvShow.id as number,
@@ -39,23 +31,17 @@ function mapToTvShow(tmdbTvShow: any): ITvShow {
   return mappedTvShow;
 }
 
-export async function getTvShowById(tvShowId: number): Promise<ITvShow | null> {
+export async function getTvShowById(tvShowId: number): Promise<ITvShow> {
   const url = `${BASE_URL}/tv/${tvShowId}`;
   const params = { api_key: API_KEY };
-
-  try {
-    const response = await axios.get(url, { params });
-    const tvShow = mapToTvShow(response.data);
-    return tvShow;
-  } catch (error) {
-    console.error(`Error fetching TV show by ID ${tvShowId}:`, error.message);
-    return null;
-  }
+  const response = await axios.get(url, { params });``
+  const tvShow = mapToTvShow(response.data);
+  return tvShow;
 }
 
-export async function searchTvShows(query: string, page: number =1): Promise<ITvShow[]> {
+export async function searchTvShows(query: string, page: number = 1): Promise<ITvShow[]> {
   const url = `${BASE_URL}/search/tv`;
-  const params = { api_key: API_KEY, query,page };
+  const params = { api_key: API_KEY, query, page };
   const response = await axios.get(url, { params });
   const mappedShows = response.data.results.map(mapToTvShow);
   return mappedShows;

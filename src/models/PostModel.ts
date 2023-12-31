@@ -1,23 +1,28 @@
-import { Document, Schema, model, Types } from 'mongoose';
+import { Document, Schema, model, Types } from "mongoose";
 
 export interface IPost {
-  creatorId: Types.ObjectId;
+  ownerId: string;
   text: string;
   image: string;
   rating: number;
   tmdbId: string;
-  comments: Types.ObjectId[];
+  commentIds: string[];
+  createdAt: Date;
 }
 
-const postSchema = new Schema<IPost & Document>({
-  creatorId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  text: { type: String, required: true },
-  image: { type: String, required: true },
-  rating: { type: Number, required: true },
-  tmdbId: { type: String, required: true },
-  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-});
+const postSchema = new Schema<IPost & Document>(
+  {
+    ownerId: { type: String, ref: "User", required: true },
+    text: { type: String, required: true },
+    image: { type: String, required: true },
+    rating: { type: Number, required: true },
+    tmdbId: { type: String, required: true },
+    commentIds: { type: [String], ref: "Comment" },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
 
-const PostModel = model<IPost & Document>('Post', postSchema);
+const PostModel = model<IPost & Document>("Post", postSchema);
 
 export default PostModel;
