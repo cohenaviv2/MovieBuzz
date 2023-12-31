@@ -1,11 +1,12 @@
 import express, { Express } from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import movieRouter from "./routes/MovieRoute";
 import tvShowsRouter from "./routes/TvShowRoute";
 import commentRoutes from "./routes/CommentRoute";
 import postRoutes from "./routes/PostRoute";
 import authRoutes from "./routes/AuthRoute";
-import userRoute from "./routes/UserRoute"
+import userRoute from "./routes/UserRoute";
 import "dotenv/config";
 
 const initServer = (): Promise<Express> => {
@@ -16,6 +17,7 @@ const initServer = (): Promise<Express> => {
     mongoose.connect(url).then(() => {
       const app = express();
       app.use(express.json());
+      app.use(cors());
       app.use("/auth", authRoutes);
       app.use("/user", userRoute);
       app.use("/comments", commentRoutes);

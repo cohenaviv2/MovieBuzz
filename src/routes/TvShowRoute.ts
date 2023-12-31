@@ -42,7 +42,7 @@ router.get("/popular", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/top_rated", async (req: Request, res: Response) => {
+router.get("/top-rated", async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const topRatedShows = await getTopRatedTvShows(page);
@@ -53,7 +53,7 @@ router.get("/top_rated", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/on_the_air", async (req: Request, res: Response) => {
+router.get("/on-the-air", async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const onAirShows = await getOnAirTvShows(page);

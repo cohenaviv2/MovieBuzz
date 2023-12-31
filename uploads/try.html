@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Post</title>
+  </head>
+  <body>
+    <h2>Create Post</h2>
+
+    <!-- Post Creation Form -->
+    <form id="postForm" onsubmit="createPost(event)">
+      <label for="image">Select Image:</label>
+      <input type="file" name="image" id="image" accept="image/*" />
+      <br />
+
+      <button type="submit">Create Post</button>
+    </form>
+
+    <!-- Display Response -->
+    <div id="responseContainer"></div>
+
+    <script>
+      async function createPost(event) {
+        event.preventDefault();
+
+        try {
+          const response = await fetch("http://localhost:5000/posts/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "JWT ",
+            },
+            body: JSON.stringify({
+              ownerId: "GOING_TO_BE_REPLACED_ID",
+              tmdbId: "123",
+              text: "post",
+              rating: 5,
+            }),
+            file: document.getElementById("image").files[0],
+          });
+
+          const responseData = await response.json();
+
+          // Display the response
+          const responseContainer = document.getElementById("responseContainer");
+          responseContainer.innerHTML = `<p>Response: ${JSON.stringify(responseData)}</p>`;
+        } catch (error) {
+          console.error("Error creating post:", error);
+        }
+      }
+    </script>
+  </body>
+</html>

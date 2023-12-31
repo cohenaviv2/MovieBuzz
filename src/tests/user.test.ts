@@ -55,21 +55,20 @@ afterAll(async () => {
 describe("Post tests", () => {
   test("Test get user profile", async () => {
     const response = await request(app)
-      .get(`/user/${userId}`)
+      .get("/user/profile")
       .set("Authorization", "JWT " + adminAccessToken);
     expect(200);
   });
 
-  test("Test get user profile with invalid ID", async () => {
-    const invalidId = userId + "123";
+  test("Test get user profile with invalid token", async () => {
     const response = await request(app)
-      .get(`/user/${invalidId}`)
-      .set("Authorization", "JWT " + adminAccessToken);
-    expect(403);
+      .get("/user/profile")
+      .set("Authorization", "JWT 1" + adminAccessToken);
+    expect(401);
   });
 
   test("Test get user profile without access token", async () => {
-    const response = await request(app).get(`/user/${userId}`);
+    const response = await request(app).get("/user/profile");
     expect(401);
   });
 
@@ -92,7 +91,7 @@ describe("Post tests", () => {
     updatedUser.fullName = "Updated";
 
     const response = await request(app)
-      .put(`/user/${userId}`)
+      .put("/user/profile")
       .send(updatedUser)
       .set("Authorization", "JWT " + userAccessToken)
       .expect(200);

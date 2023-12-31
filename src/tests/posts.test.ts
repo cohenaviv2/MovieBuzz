@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import initServer from "../server";
 import UserModel, { IUser } from "../models/UserModel";
 import PostModel, { IPost } from "../models/PostModel";
+import { IComment } from "../models/CommentModel";
 
 let app: Express;
 let accessToken: string;
@@ -11,11 +12,10 @@ let db_post_id: string;
 let post1_id: string;
 let post2_id: string;
 
-const testPost: IPost = {
+let testPost: IPost = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
   tmdbId: "123",
   text: "post",
-  image: "test.jpg",
   rating: 5,
   commentIds: [],
   createdAt: new Date(Date.now()),
@@ -73,7 +73,6 @@ describe("Post tests", () => {
     expect(response.body.length).toBe(1);
     const rc = response.body[0];
     expect(rc.text).toBe(testPost.text);
-    expect(rc.image).toBe(testPost.image);
     expect(rc.ownerId).toBe(testUser._id);
   });
 
@@ -132,62 +131,93 @@ describe("Post tests", () => {
     expect(response.body[1].text).toBe("Text post 2");
   });
 
-  // test("Test get posts by recency", async () => {
-  //   const post1: IPost = {
-  //     ownerId: "GOING_TO_BE_REPLACED_ID",
-  //     tmdbId: "111",
-  //     text: "post 1",
-  //     image: "test.jpg",
-  //     rating: 5,
-  //     commentIds: [],
-  //     createdAt: new Date(Date.now()),
-  //   };
-  //   const post2: IPost = {
-  //     ownerId: "GOING_TO_BE_REPLACED_ID",
-  //     tmdbId: "222",
-  //     text: "post 2",
-  //     image: "test.jpg",
-  //     rating: 3,
-  //     commentIds: [],
-  //     createdAt: new Date(Date.now()),
-  //   };
-  //   const post3: IPost = {
-  //     ownerId: "GOING_TO_BE_REPLACED_ID",
-  //     tmdbId: "333",
-  //     text: "post 3",
-  //     image: "test.jpg",
-  //     rating: 1,
-  //     commentIds: [],
-  //     createdAt: new Date(Date.now()),
-  //   };
-  //   const res1 = await request(app)
-  //     .post("/posts")
-  //     .send(post1)
-  //     .set("Authorization", "JWT " + accessToken)
-  //     .expect(201);
-  //   post1_id = res1.body._id;
-  //   const res2 = await request(app)
-  //     .post("/posts")
-  //     .send(post2)
-  //     .set("Authorization", "JWT " + accessToken)
-  //     .expect(201);
-  //   post2_id = res2.body._id;
-  //   const res3 = await request(app)
-  //     .post("/posts")
-  //     .send(post3)
-  //     .set("Authorization", "JWT " + accessToken)
-  //     .expect(201);
+  test("Test get posts by recency", async () => {
+    await PostModel.deleteMany();
+    let testPost1: IPost = {
+      ownerId: "...",
+      tmdbId: "1111",
+      text: "post 1",
+      rating: 5,
+      commentIds: [],
+      createdAt: new Date(Date.now()),
+    };
+    let testPost2: IPost = {
+      ownerId: "...",
+      tmdbId: "2222",
+      text: "post 2",
+      rating: 3,
+      commentIds: [],
+      createdAt: new Date(Date.now()),
+    };
+    const res1 = await request(app)
+      .post("/posts")
+      .send(testPost1)
+      .set("Authorization", "JWT " + accessToken);
+    post1_id = res1.body._id;
+    await new Promise((r) => setTimeout(r, 1000));
+    const res2 = await request(app)
+      .post("/posts")
+      .send(testPost2)
+      .set("Authorization", "JWT " + accessToken);
+    post2_id = res2.body._id;
 
-  //   const response = await request(app).get("posts/recent");
-  //   expect(response.body[0].text).toBe("post 3");
-  //   expect(response.body[0].tmdbId).toBe("333");
-  //   expect(response.body[1].text).toBe("post 2");
-  //   expect(response.body[1].tmdbId).toBe("222");
-  //   expect(response.body[2].text).toBe("post 1");
-  //   expect(response.body[2].tmdbId).toBe("111");
-  // });
+    const response = await request(app).get("/posts/recent").expect(200);
+    expect(response.body[0].text).toBe("post 2");
+    expect(response.body[1].text).toBe("post 1");
+    console.log(response.body[0].createdAt);
+    console.log(response.body[1].createdAt);
+  });
 
-  // test("Test get posts by recency", async () => {});
+  test("Test get posts by most-commented", async () => {
+    let testComment1: IComment = {
+      ownerId: "...",
+      postId: post1_id,
+      text: "comment 1",
+    };
+    let testComment2: IComment = {
+      ownerId: "...",
+      postId: post2_id,
+      text: "comment 2",
+    };
 
-  // test("Test get posts by recency", async () => {});
+    await request(app)
+      .post("/comments")
+      .send(testComment1)
+      .set("Authorization", "JWT " + accessToken);
+    testComment1.text = "comment 1.1";
+    await request(app)
+      .post("/comments")
+      .send(testComment1)
+      .set("Authorization", "JWT " + accessToken);
+    await request(app)
+      .post("/comments")
+      .send(testComment2)
+      .set("Authorization", "JWT " + accessToken);
+
+    const response = await request(app).get("/posts/most-commented").expect(200);
+    expect(response.body[0]._id).toBe(post1_id);
+    expect(response.body[1]._id).toBe(post2_id);
+  });
+
+  test("Test get posts by top-rated", async () => {
+    let testPost3: IPost = {
+      ownerId: "...",
+      tmdbId: "3333",
+      text: "post 3",
+      rating: 1,
+      commentIds: [],
+      createdAt: new Date(Date.now()),
+    };
+
+    const res1 = await request(app)
+      .post("/posts")
+      .send(testPost3)
+      .set("Authorization", "JWT " + accessToken);
+    let post3_id = res1.body._id;
+
+    const response = await request(app).get("/posts/top-rated").expect(200);
+    expect(response.body[0]._id).toBe(post1_id);
+    expect(response.body[1]._id).toBe(post2_id);
+    expect(response.body[2]._id).toBe(post3_id);
+  });
 });

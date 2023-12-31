@@ -35,13 +35,13 @@ describe("TV Show API tests", () => {
   });
 
   test("Test get top rated tv shows", async () => {
-    const response = await request(app).get("/tv/top_rated");
+    const response = await request(app).get("/tv/top-rated");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
 
   test("Test get on-the-air tv shows", async () => {
-    const response = await request(app).get("/tv/on_the_air");
+    const response = await request(app).get("/tv/on-the-air");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });

@@ -21,7 +21,6 @@ let testPost: IPost = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
   tmdbId: "123",
   text: "post",
-  image: "test.jpg",
   rating: 5,
   commentIds: [],
   createdAt: new Date(Date.now()),
