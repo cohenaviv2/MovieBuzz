@@ -8,15 +8,37 @@
   <body>
     <h2>Image Upload</h2>
 
-    <form id="imageUploadForm" action="http://127.0.0.1:5000/upload" method="post" enctype="multipart/form-data">
+    <!-- Image Upload Form -->
+    <form id="imageUploadForm" action="http://127.0.0.1:5001/user/upload" method="post" enctype="multipart/form-data">
       <label for="image">Select Image:</label>
       <input type="file" name="image" id="image" accept="image/*" required />
       <br />
       <button type="submit">Upload Image</button>
     </form>
 
+    <!-- Image Retrieval Form -->
+    <form id="imageRetrieveForm">
+      <label for="filename">Enter Filename:</label>
+      <input type="text" name="filename" id="filename" required />
+      <br />
+      <button type="button" onclick="retrieveImage()">Retrieve Image</button>
+    </form>
+
+    <!-- Display Image -->
+    <div id="imageContainer"></div>
+
     <script>
-      // Optional: Add JavaScript code here for any client-side validation or handling
+      function retrieveImage() {
+        // Get the filename from the input field
+        const filename = document.getElementById("filename").value;
+
+        // Construct the URL for retrieving the image
+        const imageUrl = `http://127.0.0.1:5001/user/upload/${filename}`;
+
+        // Display the image
+        const imageContainer = document.getElementById("imageContainer");
+        imageContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded Image" />`;
+      }
     </script>
   </body>
 </html>

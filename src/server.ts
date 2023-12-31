@@ -6,7 +6,6 @@ import commentRoutes from "./routes/CommentRoute";
 import postRoutes from "./routes/PostRoute";
 import authRoutes from "./routes/AuthRoute";
 import userRoute from "./routes/UserRoute";
-import uploadRoute from "./routes/UploadRoute";
 import "dotenv/config";
 
 const initServer = (): Promise<Express> => {
@@ -23,7 +22,6 @@ const initServer = (): Promise<Express> => {
       app.use("/posts", postRoutes);
       app.use("/movies", movieRouter);
       app.use("/tv", tvShowsRouter);
-      app.use("/upload", uploadRoute);
       resolve(app);
     });
   });

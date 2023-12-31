@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
+import path from "path";
 
-async function create(req: Request, res: Response) {
+async function uploadImage(req: Request, res: Response) {
   try {
     if (!req.file) {
       return res.status(400).send("No file uploaded.");
@@ -13,6 +14,13 @@ async function create(req: Request, res: Response) {
   }
 }
 
+async function getImage(req: Request, res: Response) {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, "../../uploads/", filename);
+  res.sendFile(filePath);
+}
+
 export default {
-  create,
+  uploadImage,
+  getImage,
 };

@@ -78,7 +78,7 @@ async function logout(req: Request, res: Response) {
         return res.status(403).send("Invalid request");
       }
 
-      user.tokens.splice(user.tokens.indexOf(refreshToken),1);
+      user.tokens.splice(user.tokens.indexOf(refreshToken), 1);
       await user.save();
       return res.sendStatus(200);
     } catch (error) {
