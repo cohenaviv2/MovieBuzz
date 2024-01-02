@@ -15,7 +15,7 @@ const testUser: IUser = {
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  image: "img.jpg",
+  imageUrl: "img.jpg",
   tokens: [],
 };
 
@@ -24,7 +24,7 @@ const testAdmin: IUser = {
   email: "testAdmin@test.com",
   role: "admin",
   password: "1234567890",
-  image: "img.jpg",
+  imageUrl: "img.jpg",
   tokens: [],
 };
 

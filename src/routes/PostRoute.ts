@@ -10,7 +10,7 @@ router.get("/top-rated", PostController.getByTopRated.bind(PostController));
 router.get("/most-commented", PostController.getByMostCommented.bind(PostController));
 router.get("/find", auth, PostController.find.bind(PostController));
 router.get("/:id", PostController.getById.bind(PostController));
-router.post("/", auth, PostController.create.bind(PostController));
+router.post("/",auth, PostController.create.bind(PostController));
 router.put("/:id", auth, PostController.updateById.bind(PostController));
 router.delete("/:id", auth, PostController.deleteById.bind(PostController));
 

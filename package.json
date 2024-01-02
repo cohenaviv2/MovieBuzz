@@ -9,6 +9,7 @@
     "test-posts": "tsc && jest --detectOpenHandles --forceExit ./src/tests/posts.test",
     "test-comments": "tsc && jest --detectOpenHandles --forceExit ./src/tests/comments.test",
     "test-user": "tsc && jest --detectOpenHandles --forceExit ./src/tests/user.test",
+    "test-upload": "tsc && jest --detectOpenHandles --forceExit ./src/tests/upload.test",
     "start": "tsc && node dist/app.js",
     "dev": "nodemon src/app.ts",
     "lint": "eslint . --ext .ts"
@@ -38,6 +39,7 @@
     "@types/passport": "^1.0.16",
     "@types/passport-google-oauth20": "^2.0.14",
     "@types/supertest": "^2.0.16",
+    "@types/uuid": "^9.0.7",
     "dotenv": "^16.3.1",
     "jest": "^29.7.0",
     "nodemon": "^3.0.2",
@@ -47,7 +49,9 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@types/body-parser": "^1.19.5",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
@@ -55,6 +59,7 @@
     "mongoose": "^8.0.3",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "uuid": "^9.0.1"
   }
 }

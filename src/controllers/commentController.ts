@@ -17,7 +17,7 @@ class CommentsController extends BaseController<IComment> {
       const post = await PostModel.findById(commentData.postId);
       if (post == null) return res.status(404).send("Invalid post id");
       const newComments = await this.model.create(commentData);
-      post.commentIds.push(newComments._id.toString());
+      post.numOfComments = post.numOfComments + 1;
       await post.save();
       return res.status(201).send(newComments);
     } catch (err) {

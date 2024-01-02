@@ -22,7 +22,7 @@ let testPost: IPost = {
   tmdbId: "123",
   text: "post",
   rating: 5,
-  commentIds: [],
+  imageUrl: "img.jpg",
   createdAt: new Date(Date.now()),
 };
 
@@ -31,7 +31,7 @@ let testUser: IUser = {
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  image: "img.jpg",
+  imageUrl: "img.jpg",
   tokens: [],
 };
 

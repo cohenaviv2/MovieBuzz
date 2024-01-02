@@ -5,8 +5,9 @@ export interface IPost {
   text: string;
   rating: number;
   tmdbId: string;
-  commentIds: string[];
-  createdAt: Date;
+  imageUrl?: string;
+  numOfComments?: number;
+  createdAt?: Date;
 }
 
 const postSchema = new Schema<IPost & Document>(
@@ -15,7 +16,8 @@ const postSchema = new Schema<IPost & Document>(
     text: { type: String, required: true },
     rating: { type: Number, required: true },
     tmdbId: { type: String, required: true },
-    commentIds: { type: [String], ref: "Comment" },
+    imageUrl: { type: String, required: true },
+    numOfComments: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

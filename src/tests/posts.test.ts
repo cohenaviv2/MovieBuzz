@@ -17,7 +17,7 @@ let testPost: IPost = {
   tmdbId: "123",
   text: "post",
   rating: 5,
-  commentIds: [],
+  imageUrl: "img.jpg",
   createdAt: new Date(Date.now()),
 };
 
@@ -26,7 +26,7 @@ const testUser: IUser = {
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  image: "img.jpg",
+  imageUrl: "img.jpg",
   tokens: [],
 };
 
@@ -133,39 +133,37 @@ describe("Post tests", () => {
 
   test("Test get posts by recency", async () => {
     await PostModel.deleteMany();
+
     let testPost1: IPost = {
       ownerId: "...",
       tmdbId: "1111",
       text: "post 1",
       rating: 5,
-      commentIds: [],
-      createdAt: new Date(Date.now()),
+      imageUrl: "img.jpg",
     };
     let testPost2: IPost = {
       ownerId: "...",
       tmdbId: "2222",
       text: "post 2",
       rating: 3,
-      commentIds: [],
-      createdAt: new Date(Date.now()),
+      imageUrl: "img.jpg",
     };
     const res1 = await request(app)
       .post("/posts")
       .send(testPost1)
       .set("Authorization", "JWT " + accessToken);
     post1_id = res1.body._id;
+
     await new Promise((r) => setTimeout(r, 1000));
+
     const res2 = await request(app)
       .post("/posts")
       .send(testPost2)
       .set("Authorization", "JWT " + accessToken);
     post2_id = res2.body._id;
-
     const response = await request(app).get("/posts/recent").expect(200);
     expect(response.body[0].text).toBe("post 2");
     expect(response.body[1].text).toBe("post 1");
-    console.log(response.body[0].createdAt);
-    console.log(response.body[1].createdAt);
   });
 
   test("Test get posts by most-commented", async () => {
@@ -205,7 +203,7 @@ describe("Post tests", () => {
       tmdbId: "3333",
       text: "post 3",
       rating: 1,
-      commentIds: [],
+      imageUrl: "img.jpg",
       createdAt: new Date(Date.now()),
     };
 
