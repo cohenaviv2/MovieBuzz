@@ -1,9 +1,8 @@
-import initServer from './server';
+import initServer from "./server";
 
-initServer().then((app) => {
-  const PORT = process.env.SERVER_PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`\n-> Connected to MongoDB\n-> Server is running on port ${PORT}\n\nMovies:
+initServer().then(([app, httpServer, io])=> {
+    const PORT = process.env.SERVER_PORT || 5000;
+    httpServer.listen(PORT, () => console.log(`Server is running on port ${PORT}\n\nMovies:
     http://localhost:${PORT}/movies/search
     http://localhost:${PORT}/movies/popular
     http://localhost:${PORT}/movies/now_playing
@@ -25,6 +24,20 @@ initServer().then((app) => {
     \nUser:
     http://localhost:${PORT}/user/:id
     \nPosts:
-    http://localhost:${PORT}/posts/recent`);
-  });
+    http://localhost:${PORT}/posts/recent`
+    ));
+
+    io.on('connection', (socket) => {
+        console.log(`User ${socket.id} connected`);
+
+        socket.on('chat message', (message) => {
+            console.log(`${socket.id}:`, message);
+
+            io.emit('chat message', `${socket.id}: ` + message);
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('User disconnected');
+        });
+    });
 });
