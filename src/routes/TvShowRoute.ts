@@ -1,12 +1,5 @@
-import express, {Request, Response} from "express";
-import {
-  searchTvShows,
-  getPopularTvShows,
-  getTopRatedTvShows,
-  getOnAirTvShows,
-  getTvShowsByGenre,
-  getTvShowById
-} from "../controllers/TvShowsController";
+import express, { Request, Response } from "express";
+import { searchTvShows, getPopularTvShows, getTopRatedTvShows, getOnAirTvShows, getTvShowsByGenre, getTvShowById } from "../controllers/TvShowsController";
 
 const router = express.Router();
 
@@ -28,8 +21,38 @@ router.get("/search", async (req: Request, res: Response) => {
     return;
   }
   const results = await searchTvShows(query, page);
-  res.json(results);
+  if (results.length == 0) {
+    res.status(404).send("No TV Shows found");
+  } else {
+    res.json(results);
+  }
 });
+/**
+ * @swagger
+ * /tv/search:
+ *   get:
+ *     summary: Search for TV shows based on a query
+ *     tags: [TV Shows]
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The search query
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: The page number for paginated results (default is 1)
+ *     responses:
+ *       200:
+ *         description: Successful response with search results for TV shows
+ *       404:
+ *         description: No TV Shows found for the given query.
+ *       500:
+ *         description: Internal Server Error. An error occurred while processing the request.
+ */
 
 router.get("/popular", async (req: Request, res: Response) => {
   try {
@@ -41,6 +64,24 @@ router.get("/popular", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+/**
+ * @swagger
+ * /tv/popular:
+ *   get:
+ *     summary: Get a list of popular TV shows
+ *     tags: [TV Shows]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: The page number for paginated results (default is 1)
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of popular TV shows
+ *       500:
+ *         description: Internal Server Error. An error occurred while fetching popular TV shows.
+ */
 
 router.get("/top-rated", async (req: Request, res: Response) => {
   try {
@@ -52,6 +93,24 @@ router.get("/top-rated", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+/**
+ * @swagger
+ * /tv/top-rated:
+ *   get:
+ *     summary: Get a list of top-rated TV shows
+ *     tags: [TV Shows]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: The page number for paginated results (default is 1)
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of top-rated TV shows
+ *       500:
+ *         description: Internal Server Error. An error occurred while fetching top-rated TV shows.
+ */
 
 router.get("/on-the-air", async (req: Request, res: Response) => {
   try {
@@ -63,6 +122,24 @@ router.get("/on-the-air", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+/**
+ * @swagger
+ * /tv/on-the-air:
+ *   get:
+ *     summary: Get a list of TV shows currently on the air
+ *     tags: [TV Shows]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: The page number for paginated results (default is 1)
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of TV shows on the air
+ *       500:
+ *         description: Internal Server Error. An error occurred while fetching on-the-air TV shows.
+ */
 
 router.get("/by-genre/:genreId", async (req: Request, res: Response) => {
   const genreId = Number(req.params.genreId);

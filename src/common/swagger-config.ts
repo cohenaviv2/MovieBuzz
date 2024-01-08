@@ -87,6 +87,14 @@ export const options = {
               type: "string",
               description: "The ID of the user who owns the post",
             },
+            ownerName: {
+              type: "string",
+              description: "The name of the user who owns the post",
+            },
+            ownerImageUrl: {
+              type: "string",
+              description: "The image of the user who owns the post",
+            },
             tmdbId: {
               type: "string",
               description: "The TMDB ID of the movie",
@@ -115,7 +123,9 @@ export const options = {
           },
           required: ["tmdbId", "text", "imageUrl", "rating"],
           example: {
-            ownerId: "user123",
+            ownerId: "221585321",
+            ownerName: "Aviv Cohen",
+            ownerImage: "aviv-pic.jpg",
             tmdbId: "12345",
             text: "This is a sample post",
             imageUrl: "https://example.com/image.jpg",
@@ -131,6 +141,14 @@ export const options = {
               type: "string",
               description: "The ID of the user who owns the comment",
             },
+            ownerName: {
+              type: "string",
+              description: "The name of the user who owns the post",
+            },
+            ownerImageUrl: {
+              type: "string",
+              description: "The image of the user who owns the post",
+            },
             postId: {
               type: "string",
               description: "The ID of the post associated with the comment",
@@ -142,7 +160,9 @@ export const options = {
           },
           required: ["postId", "text"],
           example: {
-            ownerId: "user123",
+            ownerId: "221585321",
+            ownerName: "Aviv Cohen",
+            ownerImage: "aviv-pic.jpg",
             postId: "post456",
             text: "This is a sample comment",
           },
@@ -151,6 +171,8 @@ export const options = {
     },
     tags: [
       { name: "Auth", description: "The Authentication API" },
+      { name: "Movies", description: "The Movies API" },
+      { name: "TV Shows", description: "The TV Shows API" },
       { name: "Posts", description: "The Posts API" },
       { name: "Comments", description: "The Comments API" },
     ],

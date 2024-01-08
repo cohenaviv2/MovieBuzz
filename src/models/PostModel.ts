@@ -2,6 +2,8 @@ import { Document, Schema, model, Types } from "mongoose";
 
 export interface IPost {
   ownerId?: string;
+  ownerName?: string;
+  ownerImageUrl?: string;
   tmdbId: string;
   text: string;
   imageUrl: string;
@@ -13,6 +15,8 @@ export interface IPost {
 const postSchema = new Schema<IPost & Document>(
   {
     ownerId: { type: String, ref: "User", required: true },
+    ownerName: { type: String, required: true },
+    ownerImageUrl: { type: String, required: true },
     tmdbId: { type: String, required: true },
     text: { type: String, required: true },
     imageUrl: { type: String, required: true },

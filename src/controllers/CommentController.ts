@@ -17,6 +17,9 @@ class CommentsController extends BaseController<IComment> {
       if (post == null) return res.status(404).send("Invalid post id");
       post.numOfComments = post.numOfComments + 1;
       await post.save();
+      const user = await UserModel.findById(req.body.ownerId);
+      req.body.ownerName = user.fullName;
+      req.body.ownerImageUrl = user.imageUrl;
       return super.create(req, res);
     } catch (err) {
       console.error(err);

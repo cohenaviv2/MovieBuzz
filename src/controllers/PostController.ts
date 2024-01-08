@@ -2,7 +2,7 @@ import PostModel, { IPost } from "../models/PostModel";
 import { BaseController } from "./BaseController";
 import { AuthRequest } from "./AuthController";
 import { Request, Response } from "express";
-import { getMovieById } from "../controllers/MovieController";
+import UserModel from "../models/UserModel";
 
 class PostController extends BaseController<IPost> {
   constructor() {
@@ -10,8 +10,16 @@ class PostController extends BaseController<IPost> {
   }
 
   async create(req: AuthRequest, res: Response) {
-    req.body.ownerId = req.user._id;
-    return super.create(req, res);
+    try {
+      req.body.ownerId = req.user._id;
+      const user = await UserModel.findById(req.body.ownerId);
+      req.body.ownerName = user.fullName;
+      req.body.ownerImageUrl = user.imageUrl;
+      return super.create(req, res);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
   }
 
   async find(req: AuthRequest, res: Response) {
