@@ -21,9 +21,8 @@ let testPost: IPost = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
   tmdbId: "123",
   text: "post",
-  image: "test.jpg",
   rating: 5,
-  commentIds: [],
+  imageUrl: "img.jpg",
   createdAt: new Date(Date.now()),
 };
 
@@ -32,7 +31,7 @@ let testUser: IUser = {
   email: "testUser@test.com",
   role: "user",
   password: "1234567890",
-  image: "img.jpg",
+  imageUrl: "img.jpg",
   tokens: [],
 };
 

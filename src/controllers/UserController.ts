@@ -10,14 +10,14 @@ class UserController extends BaseController<IUser> {
 
   async getById(req: AuthRequest, res: Response) {
     const userId = req.user._id;
-    if (req.params.id != userId) return res.sendStatus(403);
-    else return super.getById(req, res);
+    req.params.id = userId;
+    return super.getById(req, res);
   }
 
   async updateById(req: AuthRequest, res: Response) {
     const userId = req.user._id;
-    if (req.params.id != userId) return res.sendStatus(403);
-    else return super.updateById(req, res);
+    req.params.id = userId;
+    return super.updateById(req, res);
   }
 }
 

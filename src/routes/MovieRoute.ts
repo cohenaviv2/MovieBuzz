@@ -42,7 +42,7 @@ router.get("/popular", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/now_playing", async (req: Request, res: Response) => {
+router.get("/now-playing", async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const nowPlayingMovies = await getNowPlayingMovies(page);

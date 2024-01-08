@@ -38,10 +38,11 @@ passport.use(
         // If the user doesn't exist, create a new user
         const firstName = profile.name?.givenName || "";
         const lastName = profile.name?.familyName || "";
+
         const newUser: IUser = {
           fullName: firstName + " " + lastName,
           email: profile.emails?.[0].value || "",
-          image: profile.photos?.[0].value || "",
+          imageUrl: profile.photos?.[0].value || "",
           role: "user", // Set a default role
           password: "default",
           googleId: profile.id,
@@ -68,12 +69,10 @@ passport.use(
 );
 
 passport.serializeUser((user, done) => {
-  // Assuming that the user object contains the necessary information for JWT payload
   done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-  // Deserialize logic can be minimal, as user information is already encoded in the JWT
   done(null, user);
 });
 

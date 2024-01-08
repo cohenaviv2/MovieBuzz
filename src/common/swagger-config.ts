@@ -1,0 +1,159 @@
+export const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "MovieBuzz REST API",
+      version: "1.0.0",
+      description: "REST server including authentication using JWT",
+    },
+    servers: [{ url: "http://localhost:5000" }],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+      schemas: {
+        Tokens: {
+          type: "object",
+          properties: {
+            accessToken: {
+              type: "string",
+              description: "The JWT access token",
+            },
+            refreshToken: {
+              type: "string",
+              description: "The JWT refresh token",
+            },
+          },
+          required: ["accessToken", "refreshToken"],
+          example: {
+            accessToken: "123cd123x1xx1",
+            refreshToken: "134r2134cr1x3c",
+          },
+        },
+        UserRegistration: {
+          type: "object",
+          properties: {
+            fullName: {
+              type: "string",
+              description: "The user full name",
+            },
+            email: {
+              type: "string",
+              description: "The user email",
+            },
+            password: {
+              type: "string",
+              description: "The user password",
+            },
+            imageUrl: {
+              type: "string",
+              description: "The user image url",
+            },
+          },
+          required: ["fullName", "email", "password", "imageUrl"],
+          example: {
+            fullName: "Aviv Cohen",
+            email: "aviv@gmail.com",
+            password: "123456",
+            imageUrl: "aviv-image.jpg",
+          },
+        },
+        UserLogin: {
+          type: "object",
+          properties: {
+            email: {
+              type: "string",
+              description: "The user email",
+            },
+            password: {
+              type: "string",
+              description: "The user password",
+            },
+          },
+          required: ["email", "password"],
+          example: {
+            email: "aviv@gmail.com",
+            password: "123456",
+          },
+        },
+        Post: {
+          type: "object",
+          properties: {
+            ownerId: {
+              type: "string",
+              description: "The ID of the user who owns the post",
+            },
+            tmdbId: {
+              type: "string",
+              description: "The TMDB ID of the movie",
+            },
+            text: {
+              type: "string",
+              description: "The text content of the post",
+            },
+            imageUrl: {
+              type: "string",
+              description: "The URL of the image associated with the post",
+            },
+            rating: {
+              type: "number",
+              description: "The rating associated with the post",
+            },
+            numOfComments: {
+              type: "number",
+              description: "The number of comments on the post - by default set to 0",
+            },
+            createdAt: {
+              type: "string",
+              format: "date-time",
+              description: "The date and time when the post was created",
+            },
+          },
+          required: ["tmdbId", "text", "imageUrl", "rating"],
+          example: {
+            ownerId: "user123",
+            tmdbId: "12345",
+            text: "This is a sample post",
+            imageUrl: "https://example.com/image.jpg",
+            rating: 4.5,
+            numOfComments: 0,
+            createdAt: "2024-01-10T12:30:00Z",
+          },
+        },
+        Comment: {
+          type: "object",
+          properties: {
+            ownerId: {
+              type: "string",
+              description: "The ID of the user who owns the comment",
+            },
+            postId: {
+              type: "string",
+              description: "The ID of the post associated with the comment",
+            },
+            text: {
+              type: "string",
+              description: "The text content of the comment",
+            },
+          },
+          required: ["postId", "text"],
+          example: {
+            ownerId: "user123",
+            postId: "post456",
+            text: "This is a sample comment",
+          },
+        },
+      },
+    },
+    tags: [
+      { name: "Auth", description: "The Authentication API" },
+      { name: "Posts", description: "The Posts API" },
+      { name: "Comments", description: "The Comments API" },
+    ],
+  },
+  apis: ["./src/routes/*.ts"],
+};

@@ -1,7 +1,7 @@
 import { Document, Schema, model, Types } from "mongoose";
 
 export interface IComment {
-  ownerId: string;
+  ownerId?: string;
   postId: string;
   text: string;
 }

@@ -16,25 +16,22 @@ export interface IMovie {
 }
 
 export class ApiController<Service> {
-  apiService:string;
-  constructor(service: Service) {
-  }
-
+  apiService: string;
+  constructor(service: Service) {}
 }
 
 function mapToMovie(tmdbMovie: any): IMovie {
-  const { id, title, overview, release_date, genre_ids, original_language } = tmdbMovie;
+  const { id, title, poster_path, overview, release_date, genre_ids, original_language } = tmdbMovie;
 
   const mappedMovie: IMovie = {
-    id: tmdbMovie.id as number,
-    title: tmdbMovie.title as string,
-    poster_path: String(POSTER_URL + tmdbMovie.poster_path),
-    overview: tmdbMovie.overview as string,
-    year: new Date(tmdbMovie.release_date).getFullYear().toString(),
-    genre_ids: tmdbMovie.genre_ids as { id: number }[],
-    language: tmdbMovie.original_language as string,
+    id: id as number,
+    title: title as string,
+    poster_path: String(POSTER_URL + poster_path),
+    overview: overview as string,
+    year: new Date(release_date).getFullYear().toString(),
+    genre_ids: genre_ids as { id: number }[],
+    language: original_language as string,
   };
-
   return mappedMovie;
 }
 

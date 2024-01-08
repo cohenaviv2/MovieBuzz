@@ -1,8 +1,9 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import CommentModel, { IComment } from "../models/CommentModel";
 import { AuthRequest } from "./AuthController";
 import { BaseController } from "./BaseController";
 import PostModel from "../models/PostModel";
+import UserModel from "../models/UserModel";
 
 class CommentsController extends BaseController<IComment> {
   constructor() {
@@ -10,16 +11,13 @@ class CommentsController extends BaseController<IComment> {
   }
 
   async create(req: AuthRequest, res: Response) {
-    const _id = req.user._id;
-    req.body.ownerId = _id;
     try {
-      const commentData = req.body;
-      const post = await PostModel.findById(commentData.postId);
+      req.body.ownerId = req.user._id;
+      const post = await PostModel.findById(req.body.postId);
       if (post == null) return res.status(404).send("Invalid post id");
-      const newComments = await this.model.create(commentData);
-      post.commentIds.push(newComments._id.toString());
+      post.numOfComments = post.numOfComments + 1;
       await post.save();
-      return res.status(201).send(newComments);
+      return super.create(req, res);
     } catch (err) {
       console.error(err);
       return res.status(500).send({ error: err.message });
@@ -30,10 +28,39 @@ class CommentsController extends BaseController<IComment> {
     try {
       const userId = req.user._id;
       const userItems = await this.model.find({ ownerId: userId });
-      res.send(userItems);
+      if (userItems.length == 0) {
+        res.status(404).send({ error: "No items found" });
+      }
+      return res.send(userItems);
     } catch (err) {
       console.error(err);
-      res.status(500).send({ error: "Internal Server Error" });
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+  async getUserComments(req: Request, res: Response) {
+    try {
+      const userId = req.params.id;
+      const userItems = await this.model.find({ ownerId: userId });
+      if (userItems.length == 0) {
+        return res.status(404).send({ error: "No comments found" });
+      }
+      return res.status(200).send(userItems);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+  async getPostComments(req: Request, res: Response) {
+    try {
+      const postId = req.params.id;
+      const postItems = await this.model.find({ postId: postId });
+      if (postItems.length == 0) {
+        return res.status(404).send({ error: "No comments found" });
+      }
+      return res.status(200).send(postItems);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ error: "Internal Server Error" });
     }
   }
 }

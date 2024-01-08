@@ -16,16 +16,16 @@ export interface ITvShow {
 }
 
 function mapToTvShow(tmdbTvShow: any): ITvShow {
-  const { id, original_name, overview, first_air_date, genre_ids, original_language } = tmdbTvShow;
+  const { id, original_name, poster_path, overview, first_air_date, genre_ids, original_language } = tmdbTvShow;
 
   const mappedTvShow: ITvShow = {
-    id: tmdbTvShow.id as number,
-    title: tmdbTvShow.original_name as string,
-    poster_path: String(POSTER_URL + tmdbTvShow.poster_path),
-    overview: tmdbTvShow.overview as string,
-    year: new Date(tmdbTvShow.first_air_date).getFullYear().toString(),
-    genre_ids: tmdbTvShow.genre_ids as { id: number }[],
-    language: tmdbTvShow.original_language as string,
+    id: id as number,
+    title: original_name as string,
+    poster_path: String(POSTER_URL + poster_path),
+    overview: overview as string,
+    year: new Date(first_air_date).getFullYear().toString(),
+    genre_ids: genre_ids as { id: number }[],
+    language: original_language as string,
   };
 
   return mappedTvShow;
@@ -34,7 +34,8 @@ function mapToTvShow(tmdbTvShow: any): ITvShow {
 export async function getTvShowById(tvShowId: number): Promise<ITvShow> {
   const url = `${BASE_URL}/tv/${tvShowId}`;
   const params = { api_key: API_KEY };
-  const response = await axios.get(url, { params });``
+  const response = await axios.get(url, { params });
+  ``;
   const tvShow = mapToTvShow(response.data);
   return tvShow;
 }

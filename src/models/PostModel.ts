@@ -1,23 +1,23 @@
 import { Document, Schema, model, Types } from "mongoose";
 
 export interface IPost {
-  ownerId: string;
-  text: string;
-  image: string;
-  rating: number;
+  ownerId?: string;
   tmdbId: string;
-  commentIds: string[];
-  createdAt: Date;
+  text: string;
+  imageUrl: string;
+  rating: number;
+  numOfComments?: number;
+  createdAt?: Date;
 }
 
 const postSchema = new Schema<IPost & Document>(
   {
     ownerId: { type: String, ref: "User", required: true },
-    text: { type: String, required: true },
-    image: { type: String, required: true },
-    rating: { type: Number, required: true },
     tmdbId: { type: String, required: true },
-    commentIds: { type: [String], ref: "Comment" },
+    text: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+    rating: { type: Number, required: true },
+    numOfComments: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

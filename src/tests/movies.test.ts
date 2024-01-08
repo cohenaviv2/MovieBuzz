@@ -35,7 +35,7 @@ describe("Movie API tests", () => {
   });
 
   test("Test get now-playing movies", async () => {
-    const response = await request(app).get("/movies/now_playing");
+    const response = await request(app).get("/movies/now-playing");
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
   });
