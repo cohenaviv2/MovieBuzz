@@ -34,7 +34,7 @@ To get started with MovieBuzz, follow these steps:
 1. Install dependencies:
 
    ```bash
-    cd moviebuzz
+    cd MovieBuzz
     npm install
     
 2. Configure API keys:
