@@ -1,8 +1,8 @@
 import PostModel, { IPost } from "../models/PostModel";
 import { BaseController } from "./BaseController";
 import { AuthRequest } from "./AuthController";
-import {  Request, Response } from "express";
-
+import { Request, Response } from "express";
+import UserModel from "../models/UserModel";
 
 class PostController extends BaseController<IPost> {
   constructor() {
@@ -10,9 +10,15 @@ class PostController extends BaseController<IPost> {
   }
 
   async create(req: AuthRequest, res: Response) {
-    const userId = req.user._id;
-    req.body.ownerId = userId;
-    return super.create(req, res);
+    try {
+      const user = await UserModel.findById(req.user._id);
+      req.body.ownerId = user._id;
+      req.body.ownerName = user.fullName;
+      req.body.ownerImageUrl = user.imageUrl;
+      return super.create(req, res);
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 
   async find(req: AuthRequest, res: Response) {

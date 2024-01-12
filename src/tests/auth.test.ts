@@ -23,7 +23,9 @@ let testUser: IUser = {
 
 let testPost: IPost = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
-  tmdbId: "123",
+  tmdbId: "1029575",
+  tmdbTitle: "title",
+  tmdbImageUrl: "ioggg.ggg",
   text: "post",
   rating: 5,
   imageUrl: "img.jpg",
@@ -114,7 +116,7 @@ describe("Auth tests", () => {
     expect(newRefreshToken).toBeDefined();
 
     testPost.text = testPost.text + " 1";
-    testPost.tmdbId = "xxxxx";
+    testPost.tmdbId = "891699";
     const response2 = await request(app)
       .post("/posts")
       .send(testPost)

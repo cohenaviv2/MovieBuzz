@@ -112,6 +112,8 @@ describe("Image Upload Test", () => {
     const newPost: IPost = {
       ownerId: "...",
       tmdbId: "109445",
+      tmdbTitle: "title",
+      tmdbImageUrl: "ioggg.ggg",
       text: "Best movie I've seen in my life!",
       rating: 5,
       imageUrl: postImageUrl,

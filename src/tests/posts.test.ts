@@ -14,7 +14,9 @@ let post2_id: string;
 
 let testPost: IPost = {
   ownerId: "GOING_TO_BE_REPLACED_ID",
-  tmdbId: "123",
+  tmdbId: "1029575",
+  tmdbTitle:"title",
+  tmdbImageUrl: "ioggg.ggg",
   text: "post",
   rating: 5,
   imageUrl: "img.jpg",
@@ -104,7 +106,7 @@ describe("Post tests", () => {
     // Post 1 request
     const post1 = testPost;
     post1.text = "Text post 1";
-    post1.tmdbId = "123"; // Unique
+    post1.tmdbId = "897087"; // Unique
     const res1 = await request(app)
       .post("/posts")
       .send(post1)
@@ -113,7 +115,7 @@ describe("Post tests", () => {
     // Post 2 request
     const post2 = testPost;
     post2.text = "Text post 2";
-    post2.tmdbId = "456"; // Unique
+    post2.tmdbId = "891699"; // Unique
     const res2 = await request(app)
       .post("/posts")
       .send(post2)
@@ -136,14 +138,18 @@ describe("Post tests", () => {
 
     let testPost1: IPost = {
       ownerId: "...",
-      tmdbId: "1111",
+      tmdbId: "891699",
+      tmdbTitle: "title",
+      tmdbImageUrl: "ioggg.ggg",
       text: "post 1",
       rating: 5,
       imageUrl: "img.jpg",
     };
     let testPost2: IPost = {
       ownerId: "...",
-      tmdbId: "2222",
+      tmdbId: "897087",
+      tmdbTitle: "title",
+      tmdbImageUrl: "ioggg.ggg",
       text: "post 2",
       rating: 3,
       imageUrl: "img.jpg",
@@ -200,7 +206,9 @@ describe("Post tests", () => {
   test("Test get posts by top-rated", async () => {
     let testPost3: IPost = {
       ownerId: "...",
-      tmdbId: "3333",
+      tmdbId: "520758",
+      tmdbTitle: "title",
+      tmdbImageUrl: "ioggg.ggg",
       text: "post 3",
       rating: 1,
       imageUrl: "img.jpg",

@@ -15,9 +15,9 @@ export interface IUser {
 const userSchema = new Schema<IUser & Document>({
   fullName: { type: String, required: [true, "Please provide your first name"] },
   email: { type: String, required: [true, "Please provide your email"], unique: true },
+  password: { type: String, required: [true, "Please provide password"] },
   imageUrl: { type: String, required: [true, "Please provide your image"] },
   role: { type: String, enum: ["user", "admin"], default: "user" },
-  password: { type: String, required: [true, "Please provide password"] },
   googleId: { type: String },
   tokens: { type: [String] },
 });

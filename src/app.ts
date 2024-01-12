@@ -3,7 +3,7 @@ import initServer from './server';
 initServer().then((app) => {
   const PORT = process.env.SERVER_PORT || 5000;
   app.listen(PORT, () => {
-    console.log(`\n-> Connected to MongoDB\n-> Server is running on port ${PORT}\n\nMovies:
+    console.log(`\n-> Connected to MongoDB\n-> Server is running on port ${PORT}\n-> Swagger: http://localhost:${PORT}/api-docs\n\nMovies:
     http://localhost:${PORT}/movies/search
     http://localhost:${PORT}/movies/popular
     http://localhost:${PORT}/movies/now-playing
