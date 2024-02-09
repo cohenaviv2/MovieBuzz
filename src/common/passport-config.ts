@@ -45,7 +45,8 @@ passport.use(
           role: "user", // Set a default role
           password: "default",
           googleId: profile.id,
-          tokens: [],
+          socketId: "",
+          tokens: []
         };
 
         // Generate tokens for the new user

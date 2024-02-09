@@ -4,10 +4,10 @@ POST http://localhost:5000/auth/register
 content-type: application/json
 
 {
-  "fullName": "Test test",
-  "email": "testAdmin@test.com",
+  "fullName": "A",
+  "email": "a.com",
   "role": "user",
-  "password": "1234567890",
+  "password": "1",
   "image": "img.jpg",
   "comments": []
 }

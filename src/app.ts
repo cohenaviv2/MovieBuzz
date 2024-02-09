@@ -1,6 +1,8 @@
 import initServer from "./server";
+import { handleSocket } from "./socketHandler";
 
-initServer().then(([app, httpServer, io])=> {
+initServer
+().then(([app, httpServer, io])=> {
     const PORT = process.env.SERVER_PORT || 5000;
     httpServer.listen(PORT, () => console.log(`Server is running on port ${PORT}\n\nMovies:
     http://localhost:${PORT}/movies/search
@@ -26,18 +28,5 @@ initServer().then(([app, httpServer, io])=> {
     \nPosts:
     http://localhost:${PORT}/posts/recent`
     ));
-
-    io.on('connection', (socket) => {
-        console.log(`User ${socket.id} connected`);
-
-        socket.on('chat message', (message) => {
-            console.log(`${socket.id}:`, message);
-
-            io.emit('chat message', `${socket.id}: ` + message);
-        });
-        
-        socket.on('disconnect', () => {
-            console.log('User disconnected');
-        });
-    });
+    handleSocket(io);
 });

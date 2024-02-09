@@ -8,6 +8,7 @@ export interface IUser {
   password: string;
   image: string;
   googleId?: string;
+  socketId: string;
   tokens: string[];
   _id?: string;
 }
@@ -19,6 +20,7 @@ const userSchema = new Schema<IUser & Document>({
   role: { type: String, enum: ["user", "admin"], default: "user" },
   password: { type: String, required: [true, "Please provide password"] },
   googleId: { type: String },
+  socketId: { type: String },
   tokens: { type: [String] },
 });
 

@@ -14,6 +14,7 @@ export interface AuthRequest extends Request {
 async function register(req: Request, res: Response) {
   const email = req.body.email;
   const password = req.body.password;
+
   if (!email || !password) {
     return res.status(400).send("missing email or password");
   }
@@ -22,6 +23,7 @@ async function register(req: Request, res: Response) {
     if (findUser != null) {
       return res.status(406).send("email already exists");
     }
+
     const user = await UserModel.create(req.body);
     return res.status(201).send({ _id: user._id });
   } catch (err) {
@@ -33,6 +35,7 @@ async function login(req: Request, res: Response) {
   try {
     const email = req.body.email;
     const password = req.body.password;
+
     if (!email || !password) {
       return res.status(400).send("Please provide email and password");
     }
@@ -48,6 +51,7 @@ async function login(req: Request, res: Response) {
     if (user.googleId != null) {
       return res.status(401).send("Unauthorize, use Google login");
     }
+
     const userInfo = { _id: user._id };
     const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
     const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
@@ -55,15 +59,19 @@ async function login(req: Request, res: Response) {
     if (user.tokens == null) user.tokens = [refreshToken];
     else user.tokens.push(refreshToken);
     await user.save();
-    return res.status(200).send({ accessToken: accessToken, refreshToken: refreshToken });
+
+    res.cookie('authToken', accessToken, { httpOnly: false, secure: true });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    res.json({ success: true, message: 'Login successful', userId: user._id });
+
   } catch (err) {
     return res.status(400).send({ status: "fail", message: err.message });
   }
 }
 
 async function logout(req: Request, res: Response) {
-  const authHeader = req.headers["authorization"];
-  const refreshToken = authHeader && authHeader.split(" ")[1]; // JWT <refreshToken>
+  const refreshToken = req.cookies.refreshToken;
+
   if (refreshToken == null) return res.sendStatus(401);
 
   jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, user) => {
@@ -78,8 +86,16 @@ async function logout(req: Request, res: Response) {
         return res.status(403).send("Invalid request");
       }
 
-      user.tokens.splice(user.tokens.indexOf(refreshToken),1);
+      const refreshTokenIndex = user.tokens.indexOf(refreshToken);
+      if (refreshTokenIndex !== -1) {
+          user.tokens.splice(refreshTokenIndex, 1); // Remove the refreshToken
+      }
+
+      user.socketId = null;
       await user.save();
+
+      res.clearCookie('refreshToken');
+      res.clearCookie('authToken');
       return res.sendStatus(200);
     } catch (error) {
       res.status(403).send(error.message);
@@ -109,6 +125,7 @@ async function refreshToken(req: Request, res: Response) {
 
       user.tokens[user.tokens.indexOf(refreshToken)] = newRefreshToken;
       await user.save();
+      
       return res.status(200).send({ accessToken: newAccessToken, refreshToken: newRefreshToken });
     } catch (error) {
       console.log(error.message);
