@@ -1,8 +1,9 @@
-import initServer from './server';
+import initServer from "./server";
+import { handleSocket } from "./socketHandler";
 
-initServer().then((app) => {
-  const PORT = process.env.SERVER_PORT || 5000;
-  app.listen(PORT, () => {
+initServer().then(([app, httpServer, io]) => {
+  const PORT = process.env.SERVER_PORT;
+  httpServer.listen(PORT, () =>
     console.log(`\n-> Connected to MongoDB\n-> Server is running on port ${PORT}\n-> Swagger: http://localhost:${PORT}/api-docs\n\nMovies:
     http://localhost:${PORT}/movies/search
     http://localhost:${PORT}/movies/popular
@@ -27,6 +28,7 @@ initServer().then((app) => {
     \nPosts:
     http://localhost:${PORT}/posts/recent
     http://localhost:${PORT}/posts/top-rated
-    http://localhost:${PORT}/posts/most-commented`);
-  });
+    http://localhost:${PORT}/posts/most-commented`)
+  );
+  handleSocket(io);
 });

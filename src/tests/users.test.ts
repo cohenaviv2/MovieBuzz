@@ -17,6 +17,7 @@ const testUser: IUser = {
   password: "1234567890",
   imageUrl: "img.jpg",
   tokens: [],
+  socketId: "",
 };
 
 const testAdmin: IUser = {
@@ -26,10 +27,11 @@ const testAdmin: IUser = {
   password: "1234567890",
   imageUrl: "img.jpg",
   tokens: [],
+  socketId: "",
 };
 
 beforeAll(async () => {
-  app = await initServer();
+  [app] = await initServer();
   // User
   await UserModel.deleteMany({ email: testUser.email });
   const res1 = await request(app).post("/auth/register").send(testUser);
@@ -55,33 +57,33 @@ afterAll(async () => {
 describe("Post tests", () => {
   test("Test get user profile", async () => {
     const response = await request(app)
-      .get("/user/profile")
+      .get("/users/profile")
       .set("Authorization", "JWT " + adminAccessToken);
     expect(200);
   });
 
   test("Test get user profile with invalid token", async () => {
     const response = await request(app)
-      .get("/user/profile")
+      .get("/users/profile")
       .set("Authorization", "JWT 1" + adminAccessToken);
     expect(401);
   });
 
   test("Test get user profile without access token", async () => {
-    const response = await request(app).get("/user/profile");
+    const response = await request(app).get("/users/profile");
     expect(401);
   });
 
   test("Test get all user with admin access", async () => {
     const response = await request(app)
-      .get("/user")
+      .get("/users")
       .set("Authorization", "JWT " + adminAccessToken);
     expect(200);
   });
 
   test("Test get all user with invalid access (user)", async () => {
     const response = await request(app)
-      .get("/user")
+      .get("/users")
       .set("Authorization", "JWT " + userAccessToken);
     expect(403);
   });
@@ -91,7 +93,7 @@ describe("Post tests", () => {
     updatedUser.fullName = "Updated";
 
     const response = await request(app)
-      .put("/user/profile")
+      .put("/users/profile")
       .send(updatedUser)
       .set("Authorization", "JWT " + userAccessToken)
       .expect(200);
@@ -102,14 +104,14 @@ describe("Post tests", () => {
 
   test("Test delete user without admin access", async () => {
     await request(app)
-      .delete(`/user/${adminId}`)
+      .delete(`/users/${adminId}`)
       .set("Authorization", "JWT " + userAccessToken)
       .expect(403);
   });
 
   test("Test delete user with admin access", async () => {
     await request(app)
-      .delete(`/user/${userId}`)
+      .delete(`/users/${userId}`)
       .set("Authorization", "JWT " + adminAccessToken)
       .expect(204);
     // Verify that the post is deleted

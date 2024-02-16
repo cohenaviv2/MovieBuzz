@@ -32,7 +32,6 @@ router.post("/register", AuthController.register);
  *       406:
  *         description: The email already exist
  */
-
 router.post("/login", AuthController.login);
 /**
  * @swagger

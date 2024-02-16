@@ -21,10 +21,11 @@ let testUser: IUser = {
   password: "1234567890",
   imageUrl: "img.jpg",
   tokens: [],
+  socketId: "",
 };
 
 beforeAll(async () => {
-  app = await initServer();
+  [app]= await initServer();
   await UserModel.deleteMany({ email: testUser.email });
   const res1 = await request(app).post("/auth/register").send(testUser);
   testUser._id = res1.body._id;
@@ -149,6 +150,7 @@ describe("Image Upload Test", () => {
       password: "1234567890",
       imageUrl: userImageUrl,
       tokens: [],
+      socketId: "",
     };
 
     const response2 = await request(app).post("/auth/register").send(newUser).expect(201);

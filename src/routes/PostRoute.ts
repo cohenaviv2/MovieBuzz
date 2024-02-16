@@ -102,6 +102,7 @@ router.get("/most-commented", PostController.getByMostCommented.bind(PostControl
  *       500:
  *         description: Internal Server Error
  */
+router.get("/search", PostController.search.bind(PostController));
 router.get("/:id", PostController.getById.bind(PostController));
 router.put("/:id", auth, PostController.updateById.bind(PostController));
 router.delete("/:id", auth, PostController.deleteById.bind(PostController));

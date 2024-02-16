@@ -8,6 +8,7 @@ content-type: application/json
   "email": "testAdmin@test.com",
   "role": "user",
   "password": "1234567890",
+  "imageUrl": "me.jpg",
   "image": "img.jpg",
   "comments": []
 }
@@ -36,11 +37,12 @@ Authorization: JWT
 
 {
   "ownerId": "GOING_TO_BE_REPLACED_ID",
-  "tmdbId": "3333",
-  "text": "Test post 3",
-  "image": "test.jpg",
-  "rating": 5,
-  "comments": []
+  "tmdbId": "109445",
+  "tmdbTitle": "Frozen",
+  "tmdbImageUrl": "https://image.tmdb.org/t/p/w500/kgwjIb2JDHRhNk13lmSxiClFjVk.jpg",
+  "text": "This movie is great for the kids",
+  "imageUrl": "https://m.media-amazon.com/images/I/91dK48LufIL._SL1500_.jpg",
+  "rating": 4
 }
 
 ### COMMENT 

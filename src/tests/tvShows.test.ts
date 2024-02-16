@@ -6,7 +6,7 @@ import initServer from "../server";
 let app: Express;
 
 beforeAll(async () => {
-  app = await initServer();
+  [app] = await initServer();
 });
 
 afterAll(async () => {

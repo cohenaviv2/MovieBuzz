@@ -47,6 +47,7 @@ passport.use(
           password: "default",
           googleId: profile.id,
           tokens: [],
+          socketId: ""
         };
 
         // Generate tokens for the new user

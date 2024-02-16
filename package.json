@@ -8,8 +8,8 @@
     "test-auth": "tsc && jest --detectOpenHandles --forceExit --runInBand ./src/tests/auth.test",
     "test-posts": "tsc && jest --detectOpenHandles --forceExit ./src/tests/posts.test",
     "test-comments": "tsc && jest --detectOpenHandles --forceExit ./src/tests/comments.test",
-    "test-user": "tsc && jest --detectOpenHandles --forceExit ./src/tests/user.test",
-    "test-upload": "tsc && jest --detectOpenHandles --forceExit ./src/tests/upload.test",
+    "test-user": "tsc && jest --detectOpenHandles --forceExit ./src/tests/users.test",
+    "test-upload": "tsc && jest --detectOpenHandles --forceExit ./src/tests/uploads.test",
     "start": "tsc && node dist/app.js",
     "dev": "nodemon src/app.ts",
     "lint": "eslint . --ext .ts"
@@ -28,6 +28,7 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/express-session": "^1.17.10",
@@ -54,8 +55,10 @@
   },
   "dependencies": {
     "@types/body-parser": "^1.19.5",
+    "@types/socket.io": "^3.0.2",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
@@ -64,6 +67,7 @@
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "socket.io": "^4.7.3",
     "uuid": "^9.0.1"
   }
 }

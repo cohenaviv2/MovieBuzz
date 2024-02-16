@@ -9,6 +9,8 @@ class PostController extends BaseController<IPost> {
     super(PostModel);
   }
 
+  limit = 30;
+
   async create(req: AuthRequest, res: Response) {
     try {
       const user = await UserModel.findById(req.user._id);
@@ -17,6 +19,7 @@ class PostController extends BaseController<IPost> {
       req.body.ownerImageUrl = user.imageUrl;
       return super.create(req, res);
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   }
@@ -32,9 +35,37 @@ class PostController extends BaseController<IPost> {
     }
   }
 
+  async search(req: Request, res: Response) {
+    try {
+      const searchTerms = req.query.query as string;
+      if (!searchTerms) {
+        res.status(400).json({ error: "Query parameter is required" });
+        return;
+      }
+      const searchTermRegex = new RegExp(searchTerms, "i");
+
+      const results = await this.model.find({
+        $or: [{ tmdbTitle: { $regex: searchTermRegex } }, { ownerName: { $regex: searchTermRegex } }],
+      });
+
+      if (results.length == 0) {
+        res.status(404).send("No posts found");
+      } else {
+        res.json(results);
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({ error: "Internal Server Error" });
+    }
+  }
+
   async getByRecency(req: Request, res: Response) {
     try {
-      const posts = await PostModel.find().sort({ createdAt: -1 }).exec();
+      const page = parseInt(req.query.page as string) || 1;
+      const startIndex = (page - 1) * this.limit;
+
+      const posts = await PostModel.find().sort({ createdAt: -1 }).skip(startIndex).limit(this.limit).exec();
+
       return res.send(posts);
     } catch (error) {
       console.error(error);
@@ -44,7 +75,11 @@ class PostController extends BaseController<IPost> {
 
   async getByTopRated(req: Request, res: Response) {
     try {
-      const posts = await PostModel.find().sort({ rating: -1 }).exec();
+      const page = parseInt(req.query.page as string) || 1;
+      const startIndex = (page - 1) * this.limit;
+
+      const posts = await PostModel.find().sort({ rating: -1 }).skip(startIndex).limit(this.limit).exec();
+
       return res.send(posts);
     } catch (error) {
       console.error(error);
@@ -54,7 +89,11 @@ class PostController extends BaseController<IPost> {
 
   async getByMostCommented(req: Request, res: Response) {
     try {
-      const posts = await PostModel.find().sort({ numOfComments: -1 }).exec();
+      const page = parseInt(req.query.page as string) || 1;
+      const startIndex = (page - 1) * this.limit;
+
+      const posts = await PostModel.find().sort({ numOfComments: -1 }).skip(startIndex).limit(this.limit).exec();
+
       return res.send(posts);
     } catch (error) {
       console.error(error);

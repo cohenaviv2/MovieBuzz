@@ -57,7 +57,6 @@ router.get("/", CommentController.getAll.bind(CommentController));
  *       500:
  *         description: Internal Server Error
  */
-
 router.get("/user/:id", CommentController.getUserComments.bind(CommentController)); // get all comments by userId given
 /**
  * @swagger

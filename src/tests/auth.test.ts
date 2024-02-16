@@ -19,6 +19,7 @@ let testUser: IUser = {
   password: "1234567890",
   imageUrl: "img.jpg",
   tokens: [],
+  socketId: "",
 };
 
 let testPost: IPost = {
@@ -33,7 +34,7 @@ let testPost: IPost = {
 };
 
 beforeAll(async () => {
-  app = await initServer();
+  [app] = await initServer();
   await UserModel.deleteMany({ email: testUser.email });
   await CommentModel.deleteMany();
   await PostModel.deleteMany();

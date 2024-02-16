@@ -1,4 +1,4 @@
-import { Document, Schema, model, Types } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 
 export interface IUser {
@@ -8,6 +8,7 @@ export interface IUser {
   password: string;
   imageUrl: string;
   googleId?: string;
+  socketId: string;
   tokens: string[];
   _id?: string;
 }
@@ -19,6 +20,7 @@ const userSchema = new Schema<IUser & Document>({
   imageUrl: { type: String, required: [true, "Please provide your image"] },
   role: { type: String, enum: ["user", "admin"], default: "user" },
   googleId: { type: String },
+  socketId: { type: String },
   tokens: { type: [String] },
 });
 

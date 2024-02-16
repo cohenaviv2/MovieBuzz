@@ -1,4 +1,4 @@
-import { Document, Schema, model, Types } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
 export interface IPost {
   ownerId: string;
@@ -11,7 +11,7 @@ export interface IPost {
   tmdbTitle?: string;
   tmdbImageUrl?: string;
   numOfComments?: number;
-  createdAt?: Date;
+  createdAt?: Date | string;
 }
 
 const postSchema = new Schema<IPost & Document>(

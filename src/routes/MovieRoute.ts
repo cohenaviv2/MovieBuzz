@@ -63,7 +63,7 @@ router.get("/search", async (req: Request, res: Response) => {
 
 router.get("/popular", async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string, 10) || 1;
+    const page = parseInt(req.query.page as string) || 1;
     const popularMovies = await getPopularMovies(page);
     res.json(popularMovies);
   } catch (error) {
@@ -149,8 +149,9 @@ router.get("/upcoming", async (req: Request, res: Response) => {
  */
 
 router.get("/by-genre/:genreId", async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
   const genreId = Number(req.params.genreId);
-  const movies = await getMoviesByGenre(genreId);
+  const movies = await getMoviesByGenre(genreId,page);
   res.json(movies);
 });
 

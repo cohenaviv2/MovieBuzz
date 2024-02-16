@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
+import { BaseController } from "./BaseController";
 import CommentModel, { IComment } from "../models/CommentModel";
 import { AuthRequest } from "./AuthController";
-import { BaseController } from "./BaseController";
 import PostModel from "../models/PostModel";
 import UserModel from "../models/UserModel";
 
