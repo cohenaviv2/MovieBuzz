@@ -2,10 +2,11 @@ import { Document, Schema, model } from "mongoose";
 
 export interface IComment {
   ownerId: string;
-  ownerName?:string;
-  ownerImageUrl?:string;
+  ownerName?: string;
+  ownerImageUrl?: string;
   postId: string;
   text: string;
+  _id?: string;
 }
 
 const commentSchema = new Schema<IComment & Document>({

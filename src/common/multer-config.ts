@@ -41,7 +41,7 @@ async function handleImageUpload(req: Request, res: Response) {
     const targetFolder = req.params.targetFolder;
     const UPLOADS_URL = process.env.UPLOADS_URL;
     const imageUrl = `${UPLOADS_URL}/${targetFolder}/${fileName}`;
-    return res.status(201).json({ imageUrl });
+    return res.status(201).json({ imageUrl:imageUrl });
   } else {
     return res.status(500).send({ error: "Failed to upload image." });
   }

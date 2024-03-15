@@ -1,12 +1,5 @@
-import express, {Request, Response} from "express";
-import {
-  searchMovies,
-  getPopularMovies,
-  getNowPlayingMovies,
-  getUpcomingMovies,
-  getMoviesByGenre,
-  getMovieById,
-} from "../controllers/MovieController"
+import express, { Request, Response } from "express";
+import { searchMovies, getPopularMovies, getNowPlayingMovies, getUpcomingMovies, getMoviesByGenre, getMovieById } from "../controllers/MovieController";
 
 const router = express.Router();
 
@@ -151,9 +144,8 @@ router.get("/upcoming", async (req: Request, res: Response) => {
 router.get("/by-genre/:genreId", async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const genreId = Number(req.params.genreId);
-  const movies = await getMoviesByGenre(genreId,page);
+  const movies = await getMoviesByGenre(genreId, page);
   res.json(movies);
 });
-
 
 export default router;

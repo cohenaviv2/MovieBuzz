@@ -10,12 +10,13 @@ class MessageController extends BaseController<IMessage> {
 
   async getConversation(req: AuthRequest, res: Response) {
     try {
-      const { senderId, receiverId } = req.body;
+      const senderId = req.user._id;
+      const { receiverId } = req.body;
       const conversation = await this.model.find(
         {
           $or: [
             { senderId, receiverId },
-            { sender: receiverId, receiver: senderId },
+            { senderId: receiverId, receiverId: senderId },
           ],
         },
         { _id: 0 }

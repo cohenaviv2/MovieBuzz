@@ -1,7 +1,7 @@
 import "dotenv/config";
-import express , { Express } from "express";
+import express, { Express } from "express";
 import mongoose from "mongoose";
-import http ,{ Server as HttpServer } from "http";
+import http, { Server as HttpServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import path from "path";
 import swaggerUI from "swagger-ui-express";
@@ -17,7 +17,6 @@ import authRoutes from "./routes/AuthRoute";
 import userRoute from "./routes/UserRoute";
 import uploadRoute from "./routes/UploadRoute";
 import messageRoute from "./routes/MessageRoute";
-
 
 function initServer() {
   const promise = new Promise<[Express, HttpServer, SocketIOServer]>((resolve) => {
@@ -42,17 +41,17 @@ function initServer() {
       app.use("/auth", authRoutes);
       app.use("/users", userRoute);
       app.use("/comments", commentRoutes);
-      app.use("/posts", postRoutes);``
+      app.use("/posts", postRoutes);
       app.use("/message", messageRoute);
       app.use("/movies", movieRouter);
       app.use("/tv", tvShowsRouter);
 
       const httpServer = http.createServer(app);
-
       const io = new SocketIOServer(httpServer, {
         cors: {
-          origin: "http://localhost:3000",
+          origin: "https://localhost:5173", // Allow requests from the root domain
           methods: ["GET", "POST"],
+          credentials: true,
         },
       });
 

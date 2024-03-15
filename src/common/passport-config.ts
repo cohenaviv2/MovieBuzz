@@ -34,6 +34,7 @@ passport.use(
 
           return done(null, { userId, accessToken, refreshToken });
         }
+        
 
         // If the user doesn't exist, create a new user
         const firstName = profile.name?.givenName || "";
@@ -44,10 +45,10 @@ passport.use(
           email: profile.emails?.[0].value || "",
           imageUrl: profile.photos?.[0].value || "",
           role: "user", // Set a default role
-          password: "default",
+          password: "googlegoogle",
           googleId: profile.id,
           tokens: [],
-          socketId: ""
+          socketId: "",
         };
 
         // Generate tokens for the new user

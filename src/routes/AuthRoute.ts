@@ -95,8 +95,8 @@ router.get("/refresh", AuthController.refreshToken);
  *               $ref: '#/components/schemas/Tokens'
  */
 
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => res.send(req.user));
-
+router.post("/google", AuthController.googleSignin);
+// router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+// router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => res.send(req.user));
 
 export default router;

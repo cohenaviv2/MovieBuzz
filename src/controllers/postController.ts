@@ -28,7 +28,9 @@ class PostController extends BaseController<IPost> {
     try {
       const userId = req.user._id;
       const userItems = await this.model.find({ ownerId: userId });
-      res.send(userItems);
+      if (userItems.length == 0) {
+        res.status(404).send("No posts found");
+      } else res.send(userItems);
     } catch (err) {
       console.error(err);
       res.status(500).send({ error: "Internal Server Error" });
@@ -45,7 +47,7 @@ class PostController extends BaseController<IPost> {
       const searchTermRegex = new RegExp(searchTerms, "i");
 
       const results = await this.model.find({
-        $or: [{ tmdbTitle: { $regex: searchTermRegex } }, { ownerName: { $regex: searchTermRegex } }],
+        $or: [{ tmdbTitle: { $regex: searchTermRegex } }, { ownerName: { $regex: searchTermRegex } }, { tmdbId: searchTerms }],
       });
 
       if (results.length == 0) {

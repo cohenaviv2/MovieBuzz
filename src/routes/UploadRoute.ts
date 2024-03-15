@@ -4,6 +4,7 @@ import { upload, handleImageUpload } from "../common/multer-config";
 
 const router = express.Router();
 
-router.post("/upload/:targetFolder", auth, upload.single("image"), handleImageUpload);
+router.post("/upload/:targetFolder", upload.single("image"), handleImageUpload);
+
 
 export default router;

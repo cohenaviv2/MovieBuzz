@@ -6,6 +6,13 @@ export interface IMessage extends Document {
   text: string;
 }
 
+export interface IUserChat {
+  _id: string;
+  socketId: string;
+  fullName: string;
+  imageUrl: string;
+}
+
 const MessageSchema = new Schema({
   senderId: { type: String, required: true },
   receiverId: { type: String, required: true },

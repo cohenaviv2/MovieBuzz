@@ -26,8 +26,8 @@ const testAdmin: IUser = {
   role: "admin",
   password: "1234567890",
   imageUrl: "img.jpg",
-  tokens: [],
-  socketId: "",
+  // tokens: [],
+  // socketId: "",
 };
 
 beforeAll(async () => {
@@ -89,17 +89,18 @@ describe("Post tests", () => {
   });
 
   test("Test update user profile", async () => {
-    const updatedUser = testUser;
-    updatedUser.fullName = "Updated";
+    const newFullName = "Updated";
+    const newPassword = "123123123";
+    const newImageUrl = "img.jpg";
 
     const response = await request(app)
       .put("/users/profile")
-      .send(updatedUser)
+      .send({newFullName:newFullName,newPassword:newPassword,newImageUrl:newImageUrl})
       .set("Authorization", "JWT " + userAccessToken)
       .expect(200);
-    expect(response.body.fullName).toBe(testUser.fullName);
+    expect(response.body.fullName).toBe(newFullName);
     const updatedUserDb = await UserModel.findById(userId);
-    expect(updatedUserDb?.fullName).toBe(updatedUser.fullName);
+    expect(updatedUserDb?.fullName).toBe(newFullName);
   });
 
   test("Test delete user without admin access", async () => {
