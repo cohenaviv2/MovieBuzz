@@ -1,8 +1,6 @@
 import { Server as SocketIOServer, Socket } from "socket.io";
-import jwt from "jsonwebtoken";
 import { UserControllerClass } from "./controllers/UserController";
 import MessageController from "./controllers/MessageController";
-import { NextFunction } from "express";
 
 interface IOSocket extends Socket {
   userId: string;
@@ -38,7 +36,7 @@ export function handleSocket(io: SocketIOServer) {
         const message = await MessageController.savePrivateMessage(sender._id, receiver._id, text);
         if (message) {
           console.log("Sending message...\n");
-          io.to(receiver.socketId).emit("private_message_received", { message });
+          io.to(receiver.socketId).emit("private_message_received", { message,sender });
         }
       } catch (error) {
         console.error("Error handling private message:", error.message);

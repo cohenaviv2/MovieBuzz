@@ -16,12 +16,11 @@ function auth(req: AuthRequest, res: Response, next: NextFunction) {
 
   jwt.verify(token, JWT_ACCESS_SECRET, (err, user) => {
     if (err) return res.sendStatus(401);
-    req.user = user as { _id: string };
+    const payload = user as { _id: string; time: Date };
+    req.user = { _id: payload._id };
     next();
   });
 }
-
-
 
 export async function restrict(req: AuthRequest, res: Response, next: NextFunction) {
   const user = await UserModel.findById(req.user._id);

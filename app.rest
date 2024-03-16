@@ -19,8 +19,8 @@ POST http://localhost:5000/auth/login
 content-type: application/json
 
 {
-  "email": "testAdmin@test.com",
-  "password": "1234567890"
+  "email": "mosh@gmail.com",
+  "password": "123123123"
 }
 
 ### REFRESH TOKEN

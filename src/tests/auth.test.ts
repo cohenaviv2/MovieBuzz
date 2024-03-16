@@ -97,7 +97,7 @@ describe("Auth tests", () => {
 
   test("Test timeout access", async () => {
     jest.setTimeout(10000);
-    await new Promise((r) => setTimeout(() => r("done"), 3 * 1000));
+    await new Promise((r) => setTimeout(() => r("done"), 15 * 1000));
     const response = await request(app)
       .post("/posts")
       .send(testPost)
@@ -113,6 +113,10 @@ describe("Auth tests", () => {
     // *Get new tokens*
     newAccessToken = response.body.accessToken;
     newRefreshToken = response.body.refreshToken;
+    console.log(accessToken);
+    console.log(refreshToken);
+    console.log(newAccessToken);
+    console.log(newRefreshToken);
     expect(newAccessToken).toBeDefined();
     expect(newRefreshToken).toBeDefined();
 

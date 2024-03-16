@@ -31,7 +31,7 @@ export interface UserId {
 }
 
 async function generateTokens(user: Document & IUser) {
-  const userInfo = { _id: user._id };
+  const userInfo = { _id: user._id, time: new Date() };
   const accessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
   const refreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
 
@@ -139,8 +139,10 @@ async function logout(req: Request, res: Response) {
   if (refreshToken == null) return res.sendStatus(401);
 
   jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, user) => {
-    if (err) return res.status(403).send(err.message);
-    const userInfo = user as { _id: string };
+    if (err) {
+      return res.status(403).send(err.message);
+    }
+    const userInfo = user as { _id: string; time: Date };
     try {
       const user = await UserModel.findById({ _id: userInfo._id });
       // if (user == null) res.status(403).send("Invalid request");
@@ -170,7 +172,7 @@ async function refreshToken(req: Request, res: Response) {
 
   jwt.verify(refreshToken, JWT_REFRESH_SECRET, async (err, user) => {
     if (err) return res.status(403).send(err.message);
-    const userInfo = user as { _id: string };
+    const userInfo = user as { _id: string; time: Date };
     try {
       const user = await UserModel.findById({ _id: userInfo._id });
       if (user == null) res.status(403).send("Invalid request");
@@ -179,9 +181,9 @@ async function refreshToken(req: Request, res: Response) {
         await user.save();
         return res.status(403).send("Invalid request");
       }
-
-      const newAccessToken = jwt.sign(userInfo, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
-      const newRefreshToken = jwt.sign(userInfo, JWT_REFRESH_SECRET);
+      const newPayload = {_id:user._id,time:new Date()}
+      const newAccessToken = jwt.sign(newPayload, JWT_ACCESS_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const newRefreshToken = jwt.sign(newPayload, JWT_REFRESH_SECRET);
 
       user.tokens = user.tokens.filter((t) => t !== refreshToken);
       user.tokens.push(newRefreshToken);

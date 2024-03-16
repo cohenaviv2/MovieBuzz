@@ -55,7 +55,7 @@ class UserController extends BaseController<IUser> {
       const userId = req.user._id;
 
       const onlineUsers = await this.model.find(
-        { socketId: { $exists: true } }, // Include all users with a socketId, including the user with the specified userId
+        { socketId: { $ne: null } }, // Include all users with a socketId, including the user with the specified userId
         "_id socketId fullName imageUrl"
       );
       res.send(onlineUsers);
